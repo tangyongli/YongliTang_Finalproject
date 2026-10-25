@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "My Final Project Template",
+    "section": "",
+    "text": "install.packages(“rmarkdown”) library(‘tidyverse’) # Introduction\n[~ 200 words]\nFine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Although wildfire smoke is often considered a summertime concern, human-caused ignitions have extended the U.S. wildfire season beyond the period associated with lightning-caused fires (Balch et al., 2017). Seasonal differences in weather, vegetation, and atmospheric transport can influence wildfire activity and the resulting smoke concentrations.\nSeasonal patterns in smoke exposure are also relevant to understanding its health burden. O’Dell et al. (2021) found that smoke-attributable asthma morbidity in the United States occurred predominantly in spring and summer, highlighting the importance of when exposure occurs. Understanding how smoke PM₂.₅ concentrations change over time within each season is therefore important for identifying periods of increasing exposure and informing public health preparedness.\nDrought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. (Wang et al., 2022) found that the increasing trend in the PM2.5 in summer over northwestern US is primary due to the positive trend in total carbonaceous aerosols (TCAs), which is stronger under the drought than the wet conditions. The relationship between drought and smoke pollution may vary across seasons and geographic locations, reflecting differences in environmental conditions and wildfire activity.\nThis study will characterize seasonal trends in wildfire smoke PM₂.₅ across California and examine their associations with drought conditions. It will first estimate long-term trends using Sen’s slope and the Mann-Kendall test for seasonal smoke PM2.5. Then, it will examine the associations between drought conditions and smoke PM₂.₅ using pixel-level Pearson correlation and summarize these associations across different seasons and regions."
+  },
+  {
+    "objectID": "index.html#download-and-clean-all-required-data",
+    "href": "index.html#download-and-clean-all-required-data",
+    "title": "My Final Project Template",
+    "section": "Download and clean all required data",
+    "text": "Download and clean all required data\n\nn=20\ndata=data.frame(x=runif(n,-180,180),\n                y=runif(n,-60,60),\n                size = runif(n, 5, 20),\n                category = factor(\n                  sample(letters[1:5], n, replace = TRUE)\n                  ),\n                value = rnorm(n))\n\ndata %&gt;% \n  slice(1:10) %&gt;% #show only 1:n rows\n  kable(digits=2,align=\"c\")%&gt;% #make table and round to two digits\n  kable_styling(bootstrap_options = \n                  c(\"striped\", \"hover\", \"condensed\", \"responsive\")) #apply other formatting\n\n\n\n\nx\ny\nsize\ncategory\nvalue\n\n\n\n\n91.38\n35.67\n13.84\na\n-0.76\n\n\n73.23\n-26.24\n16.06\nb\n-0.78\n\n\n85.94\n47.71\n19.37\nb\n0.30\n\n\n83.36\n-18.60\n11.79\nc\n-1.45\n\n\n53.51\n44.75\n6.29\ne\n1.86\n\n\n-85.05\n31.29\n7.39\nd\n-0.69\n\n\n76.60\n-28.70\n13.11\nc\n0.32\n\n\n-95.43\n2.56\n11.70\ne\n-0.64\n\n\n84.70\n-53.00\n16.50\na\n-0.08\n\n\n161.14\n45.39\n14.08\ne\n1.54\n\n\n\n\nAdd any additional processing steps here."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "data/Readme.html",
+    "href": "data/Readme.html",
+    "title": "Data Folder",
+    "section": "",
+    "text": "Data Folder\nPlace any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
+  }
+]
