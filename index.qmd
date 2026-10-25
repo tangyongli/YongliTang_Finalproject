@@ -1,16 +1,24 @@
 ---
 title: "My Final Project Template"
-author: Your name here
-subtitle: Subtitle here if desired
+author: Yongli Tang
+subtitle: 'Seasonal Trend in Wildfire Smoke PM2.5 in California and its association with Drought'
+
 date: today
 date-format: long
 ---
-
+install.packages("rmarkdown")
+library('tidyverse')
 # Introduction
 
 \[\~ 200 words\]
 
-Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way. Include figures if you like.
+Fine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Although wildfire smoke is often considered a summertime concern, human-caused ignitions have extended the U.S. wildfire season beyond the period associated with lightning-caused fires (Balch et al., 2017). Seasonal differences in weather, vegetation, and atmospheric transport can influence wildfire activity and the resulting smoke concentrations.
+
+Seasonal patterns in smoke exposure are also relevant to understanding its health burden. O’Dell et al. (2021) found that smoke-attributable asthma morbidity in the United States occurred predominantly in spring and summer, highlighting the importance of when exposure occurs. Understanding how smoke PM₂.₅ concentrations change over time within each season is therefore important for identifying periods of increasing exposure and informing public health preparedness.
+
+Drought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. (Wang et al., 2022) found that the increasing trend in the PM2.5 in summer over northwestern US is primary due to the positive trend in total carbonaceous aerosols (TCAs), which is stronger under the drought than the wet conditions. The relationship between drought and smoke pollution may vary across seasons and geographic locations, reflecting differences in environmental conditions and wildfire activity.
+
+This study will characterize seasonal trends in wildfire smoke PM₂.₅ across California and examine their associations with drought conditions. It will first estimate long-term trends using Sen's slope and the Mann-Kendall test for seasonal smoke PM2.5. Then, it will examine the associations between drought conditions and smoke PM₂.₅ using pixel-level Pearson correlation and summarize these associations across different seasons and regions.
 
 # Materials and methods
 
@@ -24,9 +32,9 @@ Data: The underlying data are publicly accessible via the web and downloaded/acc
 
 You can do bullets like this:
 
--   The first most important thing
--   The second most important thing
--   The third most important thing
+- The first most important thing
+- The second most important thing
+- The third most important thing
 
 You can do numbers like this:
 
