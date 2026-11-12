@@ -1,7 +1,7 @@
 ---
-title: "My Final Project Template"
+title: "My Final Project Template" (Consider adding a catchy project title)
 author: Yongli Tang
-subtitle: 'Seasonal Trend in Wildfire Smoke PM2.5 in California and its association with Drought'
+subtitle: 'Seasonal Trend in Wildfire Smoke PM2.5 in California and its association with Drought' (good description in subtitle)
 format:
   html:
     code-fold: true #Allow readers to show or hide code blocks
@@ -19,11 +19,11 @@ library(rmarkdown)
 
 # Introduction
 
-Fine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Human-caused ignitions have extended the U.S. wildfire season beyond the period traditionally associated with lightning-caused fires (Balch et al., 2017). As wildfire activity and smoke emissions may change over time, understanding long-term trends in smoke-related PM₂.₅ is important for identifying changes in population exposure and informing air quality management.
+Fine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Human-caused ignitions have extended the U.S. wildfire season beyond the period traditionally associated with lightning-caused fires (Balch et al., 2017)(love the citation method and your background for this project!). As wildfire activity and smoke emissions may change over time, understanding long-term trends in smoke-related PM₂.₅ is important for identifying changes in population exposure and informing air quality management.
 
-Drought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. (Wang et al., 2022) found that increasing summer PM₂.₅ concentrations in the northwestern United States were primarily driven by increases in total carbonaceous aerosols, with stronger trends under drought conditions. This suggests that drought may play an important role in shaping long-term changes in smoke-related PM₂.₅.
+Drought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. (Wang et al., 2022) found that increasing summer PM₂.₅ concentrations in the northwestern United States were primarily driven by increases in total carbonaceous aerosols, with stronger trends under drought conditions. This suggests that drought may play an important role in shaping long-term changes in smoke-related PM₂.₅. (very insightful project background!)
 
-This study will examine long-term trends in wildfire smoke PM₂.₅ across California during summer and fall, the primary seasons of wildfire activity. Sen's slope and the Mann–Kendall test will be used to characterize spatial trends from 2006 to 2023. Pixel-level Pearson correlation analysis will then examine the associations between drought conditions and smoke-related PM₂.₅, identifying their spatial patterns across California.
+This study will examine long-term trends in wildfire smoke PM₂.₅ across California during summer and fall, the primary seasons of wildfire activity. Sen's slope and the Mann–Kendall test will be used to characterize spatial trends from 2006 to 2023. Pixel-level Pearson correlation analysis will then examine the associations between drought conditions and smoke-related PM₂.₅, identifying their spatial patterns across California. (I like how you explained what each test does as part of your argument)
 
 # Materials and methods
 
@@ -378,7 +378,10 @@ m <- leaflet(data) %>%
   addPopups(~x[2], ~y[2], "Random popup")
 m  # a map with the default OSM tile layer
 ```
+(I wonder if the pixel-level correlation can be used to understand neighborhood or street level data; consider adding figure labels or captions for the specified geography that you are testing in this project. 
 
+It would helpful to add interpretation of the data map shown in this project. Looking forward to your conclusions.
+Great work!)
 
 # Conclusions
 
