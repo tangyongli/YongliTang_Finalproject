@@ -6,6 +6,9 @@ format:
   html:
     code-fold: true #Allow readers to show or hide code blocks
     code-summary: "Show Code" #Set the code-folding button label
+execute:
+  cache: false
+  message: false
 date: today
 date-format: long
 ---
@@ -14,7 +17,7 @@ date-format: long
 library(rmarkdown)
 ```
 
-# Introduction
+# 1. Introduction
 
 Fine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Human-caused ignitions have extended the U.S. wildfire season beyond the period traditionally associated with lightning-caused fires (Balch et al., 2017). As wildfire activity and smoke emissions may change over time, understanding long-term trends in smoke-related PM₂.₅ is important for identifying changes in population exposure and informing air quality management.
 
@@ -22,19 +25,21 @@ Drought is a potential influence on the seasonal patterns of wildfire smoke. By 
 
 This study will examine long-term trends in wildfire smoke PM₂.₅ across California during summer and fall, the primary seasons of wildfire activity. Sen's slope and the Mann–Kendall test will be used to characterize spatial trends from 2006 to 2023. Pixel-level Pearson correlation analysis will then examine the associations between drought conditions and smoke-related PM₂.₅, identifying their spatial patterns across California.
 
-# Materials and methods
+# 2. Materials and methods
 
-## Materials
+## 2.1 Materials
 
 - Daily 10km wildfire smoke PM2.5 data, 2006-2023\
   The wildfire smoke PM2.5 product is produced with a ML method, and the overall R2 is 0.63. Model performance varied spatially, with often very high performance at EPA monitors throughout California, the Pacific Northwest, the upper Midwest, and the Northeast and lower performance at monitors in the Southwest and the South. https://www.stanfordecholab.com/wildfire_smoke.
 
+  A smoke PM2.5 prediction of 0 in this file means that the grid cell-day did have a smoke day but did not have elevated PM2.5.
+
 - Drought data\
   Standardized Precipitation Evapotranspiration Index (SPEI) data will be used to measure the drought level. The SPEI data cover the contiguous U.S. from 1979 to the present at the spatial resolution of 4 km and are updated monthly. This drought index considers precipitation and potential evapotranspiration to indicate the spatial and temporal extents of drought conditions. The SPEI data can be access through [x](https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly)
 
-## Methods
+## 2.2 Methods
 
-### Data Clean
+### 2.2.1 Data Clean
 
 ```{r setup, echo=F, message=F, warning=F}
 
@@ -46,9 +51,10 @@ library(widgetframe)
 library(dplyr)
 library(lubridate)
 library(tidyr)
+
 knitr::opts_chunk$set(widgetframe_widgets_dir = 'widgets' ) 
-# Spatial objects contain session-specific pointers; rebuild them during render.
-knitr::opts_chunk$set(cache = FALSE)
+# Spatial objects contain session-specific pointers; rerun these chunks.
+knitr::opts_chunk$set(cache = FALSE, message = FALSE)
 ```
 
 Read daily smoke file and check attributes. The dataset `daily_smoke` covers the entire United States from 2006 to 2023. The column `grid_id_10km` contains a unique identifier for each 10-km grid cell and will be used to join the data with the GeoID shapefile.
@@ -83,30 +89,38 @@ smoke_season <- dailysmoke |>
   mutate(Season = if_else(month <= 8, "summer", "fall")) |>
   group_by(grid_id_10km, Year, Season) |>
   # Sum recorded predictions; omitted zero-smoke days add nothing to the sum.
-  summarise(smokePM_pred = sum(smokePM_pred, na.rm = TRUE), .groups = "drop") |>
+  summarise(aggsmokePM_pred = sum(smokePM_pred, na.rm = TRUE), .groups = "drop") |>
   # Divide by all calendar days: summer = 92, fall = 91.
-  mutate(smokePM_pred = smokePM_pred / if_else(Season == "summer", 92, 91)) |>
+  mutate(dailysmokePM_pred = aggsmokePM_pred/if_else(Season == "summer", 92, 91)) |>
   # Fill entirely absent grid-year-season combinations with zero.
-  complete(grid_id_10km = grid_ids, Year = 2006:2023, Season = c("summer", "fall"), fill = list(smokePM_pred = 0))
+  complete(grid_id_10km = grid_ids, Year = 2006:2023, Season = c("summer", "fall"), 
+           fill = list(dailysmokePM_pred = 0))
+
 print(head(smoke_season,5))
 saveRDS(smoke_season, "data/smoke_seasonsummerandfall.rds")
 rm(dailysmoke)
 
 ```
 
-Load the GeoID shapefile, clip it to California's boundary, and join it with the seasonal mean smoke data to create an sf object named `smokeCA`.
+Load the GeoID shapefile, clip it to California's boundary, and join it with the seasonal mean smoke data to create an sf object named `smokeCA`. As shown in @fig-grid
 
-```{r map,echo=F, message=F, warning=F}
+```{r}
+#| label: fig-grid
+#| fig-cap: "Spatial distribution of the 10 km grid cells across California."
+#| echo: false
+#| message: false
+#| warning: false
+
 library(sf)
 
 # Load the 10 km grid shapefile
-grid_10km <- sf::st_read("data/10km_grid_wgs84/10km_grid_wgs84.shp")
+grid_10km <- sf::st_read("data/10km_grid_wgs84/10km_grid_wgs84.shp", quiet = TRUE)
 dim(grid_10km)
 head(grid_10km,5)
 #Get the data type of every column
 print(sapply(grid_10km, class))
 # Load the geoshapefile of California
-CA <- sf::st_read("data/tl_2025_us_state/tl_2025_us_state.shp") |> dplyr::filter(STATEFP == "06")
+CA <- sf::st_read("data/tl_2025_us_state/tl_2025_us_state.shp", quiet = TRUE) |> dplyr::filter(STATEFP == "06")
 head(CA,5)
 
 # Match the CRS and combine California's polygons into one boundary.
@@ -131,14 +145,15 @@ Convert the seasonal mean smoke data into raster format
 library(sf)
 library(terra)
 
-# Check geometry and CRS
-class(smokeCA)
-st_geometry_type(smokeCA)
-st_crs(smokeCA)
-st_bbox(smokeCA)
+# 1. Inspect the sf object
+cat("## 1. Inspect the spatial data\n\n")
+cat("- Geometry type:", paste(unique(st_geometry_type(smokeCA)), collapse = ", "), "\n")
+cat("- CRS:", st_crs(smokeCA)$input, "\n")
+cat("- Number of features:", nrow(smokeCA), "\n")
+cat("- Number of attributes:", ncol(st_drop_geometry(smokeCA)), "\n\n")
 
 # Check attribute columns
-names(smokeCA)
+print(names(smokeCA))
 
 # Transform the 10-km grid to EPSG:5070
 smokeCA_proj <- st_transform(smokeCA, 5070)
@@ -146,12 +161,21 @@ smokeCA_proj <- st_transform(smokeCA, 5070)
 # Convert sf to SpatVector
 smokeCA_vect <- terra::vect(smokeCA_proj)
 
-# Create a raster template
+# Align the extent to a fixed 10-km grid so cells are exactly square.
+cell_size <- 10000
+grid_extent <- as.vector(terra::ext(smokeCA_vect))
+x_min <- floor(grid_extent[1] / cell_size) * cell_size
+x_max <- ceiling(grid_extent[2] / cell_size) * cell_size
+y_min <- floor(grid_extent[3] / cell_size) * cell_size
+y_max <- ceiling(grid_extent[4] / cell_size) * cell_size
 r <- terra::rast(
-  terra::ext(smokeCA_vect),
-  resolution = 10000,
+  nrows = as.integer(round((y_max - y_min) / cell_size)),
+  ncols = as.integer(round((x_max - x_min) / cell_size)),
+  xmin = x_min, xmax = x_max,
+  ymin = y_min, ymax = y_max,
   crs = terra::crs(smokeCA_vect))
-dim(r)
+stopifnot(all(abs(terra::res(r) - cell_size) < 1e-8))
+print(dim(r))
 
 # Get unique seasons and years
 # Use consecutive years from the earliest to the latest observed year.
@@ -160,7 +184,7 @@ seasons <- sort(unique(na.omit(as.character(smokeCA_proj$Season))))
 dir.create("data", showWarnings = FALSE)
 
 for (ss in seasons) {
-  # Initialize 19 NA bands so missing combinations retain their positions.
+  # Initialize one NA band per year so missing combinations retain their positions.
   pm25_season <- terra::rast(r, nlyrs = length(years), vals = NA_real_)
 
   for (i in seq_along(years)) {
@@ -168,51 +192,126 @@ for (ss in seasons) {
     if (nrow(sub_grid) == 0) next
 
     # Write the existing seasonal means into the corresponding annual band.
-    pm25_season[[i]] <- terra::rasterize(terra::vect(sub_grid), r, field = "smokePM_pred")}
+    pm25_season[[i]] <- terra::rasterize(terra::vect(sub_grid), r, field = "dailysmokePM_pred")}
 
-  names(pm25_season) <- paste0("smokePM_pred_", years)
+  names(pm25_season) <- paste0("dailysmokePM_pred", years)
   output_file <- file.path(
     "data",
-    paste0("PM25_CA_", ss, ".tif")
-  )
-  
-  # Remove existing output files
-  if (file.exists(output_file)) {
-    unlink(output_file)}
-  
+    paste0("PM25_CA_", ss, ".tif"))
+
   # Write raster
   terra::writeRaster(
     pm25_season,
     output_file,
-    overwrite = TRUE
-  )}
+    overwrite = TRUE)}
 
 ```
 
-### Trend analysis
+### 2.2.2 Trend analysis
 
 ```         
 Apply Sen's slope and the Mann-Kendall test to estimate long-term trends and assess their statistical significance by season and pixel. (Packages: trend, Kendall)
 ```
 
-### Pixel-level correlation
+### 2.2.3 Pixel-level correlation
 
 ```         
 Calculate Pearson correlation coefficients between seasonal drought indices and smoke PM2.5 time series for each pixel. (Package: stats)
 ```
 
-# Results
+# 3. Results
 
-Plot the daily mean smoke PM₂.₅ concentrations for summer and fall.
+## 3.1 Annual temporary variation of smoke PM2.5
 
-```{r seao,echo=F, message=F, warning=F}
+Annual variation in the California-wide spatial mean of seasonal daily smoke PM₂.₅ is shown in @fig-annual-seasonal-means. Each point averages the valid raster cells for one year and season, retaining zero-smoke cells.
+
+```{r}
+#| label: fig-annual-seasonal-means
+#| fig-cap: "California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023."
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 9
+#| fig-height: 5
+#| fig-retina: 2
+
+library(terra)
+library(dplyr)
+library(ggplot2)
+
+# Each band represents one year; its name ends with the four-digit year.
+get_annual_mean <- function(r, season) {
+  layer_years <- as.integer(stringr::str_extract(names(r), "[0-9]{4}$"))
+  if (anyNA(layer_years) || anyDuplicated(layer_years)) {
+    stop("Each raster band must end with a unique four-digit year.")}
+
+  x <- terra::global(r, fun = "mean", na.rm = TRUE)
+
+  tibble::tibble(
+    Year = layer_years,
+    Mean_PM25 = x$mean,
+    Season = season)
+  }
+
+annual_pm25 <- bind_rows(
+  get_annual_mean(summer, "Summer"),
+  get_annual_mean(fall, "Fall")
+  ) |>
+  mutate(Season = factor(Season, levels = c("Summer", "Fall"))) |>
+  arrange(Season, Year)
+
+p_annual <- ggplot(
+  annual_pm25,
+  aes(x = Year, y = Mean_PM25, color = Season, linetype = Season, shape = Season)
+) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  scale_color_manual(values = c("Summer" = "#D55E00", "Fall" = "#0072B2")) +
+  scale_x_continuous(breaks = sort(unique(c(
+    seq(min(annual_pm25$Year), max(annual_pm25$Year), by = 2),
+    max(annual_pm25$Year)
+  )))) +
+  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.05))) +
+  labs(
+    title = "Annual Variation in Seasonal Smoke PM2.5",
+    x = "Year",
+    y = expression("Mean daily smoke " * PM[2.5] * " (" * mu * "g/" * m^3 * ")")
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+print(p_annual)
+```
+
+California-wide seasonal mean daily wildfire smoke PM₂.₅ concentrations were generally low before 2016, except for a summer peak in 2008 that coincided with widespread lightning-triggered fires.
+
+Variability increased during 2017-2021, with the highest fall concentration in 2020 (15.70 µg/m³) and the highest summer concentration in 2021 (10.64 µg/m³). These peaks coincided with major wildfire activity, including the August Complex and Creek fires in 2020 and the Dixie and Caldor fires in 2021. Drought, extreme heat, and reduced snowpack likely helped create conditions favorable for severe wildfire activity in 2021. The Concentrations declined sharply in 2022-2023, highlighting the influence of episodic high-smoke years.
+
+## 3.2 Annual Spatial mean of smoke PM2.5
+
+Plot the daily mean smoke PM₂.₅ concentrations for summer and fall. @fig-annual-seasonal-spatial-means Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns. In summer, higher concentrations were more widespread across northern California, with the strongest hotspot in the northern interior. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.
+
+```{r}
+#| label: fig-annual-seasonal-spatial-means
+#| fig-cap: "California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023."
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 9
+#| fig-height: 5
+#| fig-retina: 2
+
 library(terra)
 library(tidyterra)
 library(ggplot2)
 
-# Load the annual seasonal rasters before calculating their means.
-summer <- terra::rast("data/PM25_CA_summer.tif")
-fall <- terra::rast("data/PM25_CA_fall.tif")
+# Read seasonal rasters before using them in the mean maps.
+summer <- rast("data/PM25_CA_summer.tif")
+fall   <- rast("data/PM25_CA_fall.tif")
 
 # plot the summer and fall mean
 # Calculate each pixel's mean across years, retaining zero-smoke years.
@@ -226,19 +325,29 @@ names(mean_maps) <- c("Summer", "Fall")
 p_mean <- ggplot() +
   geom_spatraster(data = mean_maps) +
   facet_wrap(~lyr, nrow = 1) +
-  scale_fill_viridis_c(option = "magma", name = "Mean daily smoke PM₂.₅\n(µg/m³)", na.value = "transparent") +
-  labs(title = "Mean Seasonal Smoke PM₂.₅") +
+  scale_fill_viridis_c(
+    option = "magma",
+    name = expression(atop("Mean daily smoke " * plain(PM)[2.5],
+                           "(" * mu * "g/" * m^3 * ")")),
+    na.value = "transparent") +
+  labs(title = expression("Mean Seasonal Smoke " * plain(PM)[2.5])) +
   theme_void(base_size = 12) +
-  theme(plot.title = element_text(face = "bold"), strip.text = element_text(face = "bold"), legend.position = "right")
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    strip.text = element_text(face = "bold"),
+    legend.title = element_text(size = 11),
+    legend.position = "right")
 
 print(p_mean)
 # ggsave("data/PM25_CA_mean_summer_fall.png", p_mean, width = 10, height = 7, dpi = 300, bg = "white")
 
 ```
 
+## 3.3 Seasonal Trend of smoke PM2.5
+
 Calculate pixel-level Sen's slopes and Mann–Kendall (MK) statistics for summer and fall.
 
-```{R}
+```{r seasonal-trends, message=FALSE, warning=FALSE}
 library(terra)
 library(trend)
 library(Kendall)
@@ -255,9 +364,6 @@ calc_mk <- function(x) {
   if (length(unique(x)) == 1) return(NA_real_)
   unname(Kendall::MannKendall(x)$sl)}
 
-# Read seasonal time-series rasters
-summer <- rast("data/PM25_CA_summer.tif")
-fall   <- rast("data/PM25_CA_fall.tif")
 # Calculate Sen's slope
 summer_sen <- app(summer, fun = calc_sen)
 fall_sen   <- app(fall, fun = calc_sen)
@@ -278,7 +384,16 @@ names(fall_result) <- c("Sen_slope", "MK_pvalue")
 
 Visualize pixel-level Sen's slopes and Mann–Kendall (MK) statistics.
 
-```{R}
+```{r}
+#| label: fig-seasonal-trend
+#| fig-cap: "California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023."
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 15
+#| fig-height: 8
+#| fig-retina: 3
+
 # Plot the summer and fall trend
 library(terra)
 library(tidyterra)
@@ -292,25 +407,26 @@ slope_range <- terra::global(
   "range",
   na.rm = TRUE)
 
-limmax <- max(as.matrix(slope_range), na.rm = TRUE)
-limmin<- min(as.matrix(slope_range), na.rm = TRUE)
-if (limmax == 0) limmax <- 1
+slope_limit <- max(abs(as.matrix(slope_range)), na.rm = TRUE)
+if (!is.finite(slope_limit) || slope_limit == 0) slope_limit <- 1
 
 # Common map theme.
 map_theme <- theme_void(base_size = 11) +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5),
-    legend.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", size = 12, hjust = 0.5),
+    plot.margin = margin(6, 10, 6, 10),
+    legend.title = element_text(face = "bold", size = 10),
     legend.text = element_text(size = 9))
 
 # Plot Sen's slope.
 plot_slope <- function(x, title) {
   ggplot() +
     geom_spatraster(data = x) +
-    scale_fill_gradientn(
-      colours = c("#FFFFCC", "#FED976", "#FD8D3C", "#E31A1C", "#800026"),
-      limits = c(limmin, limmax),
-      name = "Sen's slope",
+    scale_fill_gradient2(
+      low = "#2166AC", mid = "#F7F7F7", high = "#B2182B",
+      midpoint = 0,
+      limits = c(-slope_limit, slope_limit),
+      name = expression(atop("Sen's slope", "(" * mu * "g/" * m^3 * ")/year")),
       na.value = "transparent"
     ) +
     labs(title = title) +
@@ -351,104 +467,12 @@ p <- patchwork::wrap_plots(
   ncol = 2,
   byrow = TRUE,
   guides = "collect") &
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", legend.box = "vertical")
 print(p)
 # ggsave("data/PM25_CA_trend_2x2.png", p, width = 10, height = 10, dpi = 300, bg = "white")
 
 ```
 
-Drought preprocessing below requires the local SPEI NetCDF file and is skipped when that file is unavailable.
-
-```{r drought-preprocessing, results='asis', eval=file.exists("data/nclimgrid-spei-pearson-01.nc")}
-# Monthly Drought index
-library(terra)
-# Read NetCDF file
-nc <- rast("data/nclimgrid-spei-pearson-01.nc")
-# Get time information
-dates <- time(nc)
-
-# Identify layers from 2006 to 2023
-idx <- which(dates >= as.Date("2006-01-01") &
-             dates <= as.Date("2023-12-31"))
-
-# Subset the raster
-nc_2006_2023 <- nc[[idx]]
-# Basic information
-nc_2006_2023
-# Extract dates
-dates <- as.Date(time(nc_2006_2023))
-
-# Create temporal information
-time_df <- data.frame(
-  Layer = seq_along(dates),
-  Date = dates
-) |>
-  mutate(
-    Year = as.integer(format(Date, "%Y")),
-    Month = as.integer(format(Date, "%m")),
-    Season = case_when(
-      Month %in% c(6, 7, 8) ~ "Summer",
-      Month %in% c(9, 10, 11) ~ "Fall",
-      TRUE ~ NA_character_
-    )
-  )
-
-head(time_df)
-
-# Keep summer and fall observations
-season_df <- time_df |>
-  filter(!is.na(Season))
-head(season_df)
-# Get unique year-season combinations
-groups <- season_df |>
-  distinct(Year, Season)
-
-# Calculate pixel-wise seasonal means for each year.
-seasonal_mean <- lapply(seq_len(nrow(groups)), function(i) {
-  year_i <- groups$Year[i]
-  season_i <- groups$Season[i]
-  # Identify corresponding layers
-  idx <- season_df$Layer[
-    season_df$Year == year_i &
-    season_df$Season == season_i]
-  # Calculate pixel-wise mean
-  x <- terra::app(
-    nc_2006_2023[[idx]],
-    fun = mean,
-    na.rm = TRUE)
-  names(x) <- paste(year_i, season_i, sep = "_")
-  x
-})
-
-# Combine all seasonal means
-seasonal_mean <- rast(seasonal_mean)
-# Check layer names
-names(seasonal_mean)
-# Check number of layers
-nlyr(seasonal_mean)
-
-```
-
-```{r, eval=FALSE, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
-m <- leaflet(data) %>% 
-  addTiles() %>% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
-  addPopups(~x[2], ~y[2], "Random popup")
-m  # a map with the default OSM tile layer
-```
-
-### Dygraphs Example
-
-```{r}
-library(dygraphs)
-dygraph(nhtemp, main = "New Haven Temperatures") |> 
-  dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01")) 
-```
-
 # Conclusions
 
-Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
-
 # References
-
-All sources are cited in a consistent manner
