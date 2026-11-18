@@ -6,6 +6,8 @@ format:
   html:
     code-fold: true #Allow readers to show or hide code blocks
     code-summary: "Show Code" #Set the code-folding button label
+  pdf:   
+    documentclass: article
 execute:
   cache: false
   message: false
@@ -382,8 +384,7 @@ m  # a map with the default OSM tile layer
 
 # Conclusions
 
-Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
 
 # References
 
-All sources are cited in a consistent manner
+
