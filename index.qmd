@@ -11,7 +11,6 @@ date-format: long
 ---
 
 ```{r}
-install.packages("rmarkdown") 
 library(rmarkdown)
 ```
 
@@ -48,7 +47,8 @@ library(dplyr)
 library(lubridate)
 library(tidyr)
 knitr::opts_chunk$set(widgetframe_widgets_dir = 'widgets' ) 
-knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
+# Spatial objects contain session-specific pointers; rebuild them during render.
+knitr::opts_chunk$set(cache = FALSE)
 ```
 
 Read daily smoke file and check attributes. The dataset `daily_smoke` covers the entire United States from 2006 to 2023. The column `grid_id_10km` contains a unique identifier for each 10-km grid cell and will be used to join the data with the GeoID shapefile.
@@ -205,7 +205,15 @@ Calculate Pearson correlation coefficients between seasonal drought indices and 
 
 Plot the daily mean smoke PM₂.₅ concentrations for summer and fall.
 
-```{R seao,echo=F, message=F, warning=F}
+```{r seao,echo=F, message=F, warning=F}
+library(terra)
+library(tidyterra)
+library(ggplot2)
+
+# Load the annual seasonal rasters before calculating their means.
+summer <- terra::rast("data/PM25_CA_summer.tif")
+fall <- terra::rast("data/PM25_CA_fall.tif")
+
 # plot the summer and fall mean
 # Calculate each pixel's mean across years, retaining zero-smoke years.
 summer_mean <- app(summer, fun = mean, na.rm = TRUE)
@@ -231,7 +239,6 @@ print(p_mean)
 Calculate pixel-level Sen's slopes and Mann–Kendall (MK) statistics for summer and fall.
 
 ```{R}
-install.packages(c("trend", "Kendall", "terra"))
 library(terra)
 library(trend)
 library(Kendall)
@@ -350,7 +357,9 @@ print(p)
 
 ```
 
-```{r, results='asis'}
+Drought preprocessing below requires the local SPEI NetCDF file and is skipped when that file is unavailable.
+
+```{r drought-preprocessing, results='asis', eval=file.exists("data/nclimgrid-spei-pearson-01.nc")}
 # Monthly Drought index
 library(terra)
 # Read NetCDF file
@@ -420,7 +429,7 @@ nlyr(seasonal_mean)
 
 ```
 
-```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
+```{r, eval=FALSE, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
 m <- leaflet(data) %>% 
   addTiles() %>% 
   addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
