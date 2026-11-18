@@ -32,6 +32,8 @@ This study will examine long-term trends in wildfire smoke PM₂.₅ across Cali
 - Daily 10km wildfire smoke PM2.5 data, 2006-2023\
   The wildfire smoke PM2.5 product is produced with a ML method, and the overall R2 is 0.63. Model performance varied spatially, with often very high performance at EPA monitors throughout California, the Pacific Northwest, the upper Midwest, and the Northeast and lower performance at monitors in the Southwest and the South. https://www.stanfordecholab.com/wildfire_smoke.
 
+  A smoke PM2.5 prediction of 0 in this file means that the grid cell-day did have a smoke day but did not have elevated PM2.5.
+
 - Drought data\
   Standardized Precipitation Evapotranspiration Index (SPEI) data will be used to measure the drought level. The SPEI data cover the contiguous U.S. from 1979 to the present at the spatial resolution of 4 km and are updated monthly. This drought index considers precipitation and potential evapotranspiration to indicate the spatial and temporal extents of drought conditions. The SPEI data can be access through [x](https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly)
 
@@ -49,6 +51,7 @@ library(widgetframe)
 library(dplyr)
 library(lubridate)
 library(tidyr)
+
 knitr::opts_chunk$set(widgetframe_widgets_dir = 'widgets' ) 
 # Spatial objects contain session-specific pointers; rerun these chunks.
 knitr::opts_chunk$set(cache = FALSE, message = FALSE)
@@ -86,20 +89,28 @@ smoke_season <- dailysmoke |>
   mutate(Season = if_else(month <= 8, "summer", "fall")) |>
   group_by(grid_id_10km, Year, Season) |>
   # Sum recorded predictions; omitted zero-smoke days add nothing to the sum.
-  summarise(smokePM_pred = sum(smokePM_pred, na.rm = TRUE), .groups = "drop") |>
+  summarise(aggsmokePM_pred = sum(smokePM_pred, na.rm = TRUE), .groups = "drop") |>
   # Divide by all calendar days: summer = 92, fall = 91.
-  mutate(smokePM_pred = smokePM_pred / if_else(Season == "summer", 92, 91)) |>
+  mutate(dailysmokePM_pred = aggsmokePM_pred/if_else(Season == "summer", 92, 91)) |>
   # Fill entirely absent grid-year-season combinations with zero.
-  complete(grid_id_10km = grid_ids, Year = 2006:2023, Season = c("summer", "fall"), fill = list(smokePM_pred = 0))
+  complete(grid_id_10km = grid_ids, Year = 2006:2023, Season = c("summer", "fall"), 
+           fill = list(dailysmokePM_pred = 0))
+
 print(head(smoke_season,5))
 saveRDS(smoke_season, "data/smoke_seasonsummerandfall.rds")
 rm(dailysmoke)
 
 ```
 
-Load the GeoID shapefile, clip it to California's boundary, and join it with the seasonal mean smoke data to create an sf object named `smokeCA`.
+Load the GeoID shapefile, clip it to California's boundary, and join it with the seasonal mean smoke data to create an sf object named `smokeCA`. As shown in @fig-grid
 
-```{r map,echo=F, message=F, warning=F}
+```{r}
+#| label: fig-grid
+#| fig-cap: "Spatial distribution of the 10 km grid cells across California."
+#| echo: false
+#| message: false
+#| warning: false
+
 library(sf)
 
 # Load the 10 km grid shapefile
@@ -134,14 +145,15 @@ Convert the seasonal mean smoke data into raster format
 library(sf)
 library(terra)
 
-# Check geometry and CRS
-class(smokeCA)
-table(st_geometry_type(smokeCA))
-st_crs(smokeCA)
-st_bbox(smokeCA)
+# 1. Inspect the sf object
+cat("## 1. Inspect the spatial data\n\n")
+cat("- Geometry type:", paste(unique(st_geometry_type(smokeCA)), collapse = ", "), "\n")
+cat("- CRS:", st_crs(smokeCA)$input, "\n")
+cat("- Number of features:", nrow(smokeCA), "\n")
+cat("- Number of attributes:", ncol(st_drop_geometry(smokeCA)), "\n\n")
 
 # Check attribute columns
-names(smokeCA)
+print(names(smokeCA))
 
 # Transform the 10-km grid to EPSG:5070
 smokeCA_proj <- st_transform(smokeCA, 5070)
@@ -163,7 +175,7 @@ r <- terra::rast(
   ymin = y_min, ymax = y_max,
   crs = terra::crs(smokeCA_vect))
 stopifnot(all(abs(terra::res(r) - cell_size) < 1e-8))
-dim(r)
+print(dim(r))
 
 # Get unique seasons and years
 # Use consecutive years from the earliest to the latest observed year.
@@ -180,20 +192,18 @@ for (ss in seasons) {
     if (nrow(sub_grid) == 0) next
 
     # Write the existing seasonal means into the corresponding annual band.
-    pm25_season[[i]] <- terra::rasterize(terra::vect(sub_grid), r, field = "smokePM_pred")}
+    pm25_season[[i]] <- terra::rasterize(terra::vect(sub_grid), r, field = "dailysmokePM_pred")}
 
-  names(pm25_season) <- paste0("smokePM_pred_", years)
+  names(pm25_season) <- paste0("dailysmokePM_pred", years)
   output_file <- file.path(
     "data",
-    paste0("PM25_CA_", ss, ".tif")
-  )
+    paste0("PM25_CA_", ss, ".tif"))
 
   # Write raster
   terra::writeRaster(
     pm25_season,
     output_file,
-    overwrite = TRUE
-  )}
+    overwrite = TRUE)}
 
 ```
 
@@ -250,6 +260,72 @@ p_mean <- ggplot() +
 print(p_mean)
 # ggsave("data/PM25_CA_mean_summer_fall.png", p_mean, width = 10, height = 7, dpi = 300, bg = "white")
 
+```
+
+Annual variation in the California-wide spatial mean of seasonal daily smoke PM₂.₅ is shown in @fig-annual-seasonal-means. Each point averages the valid raster cells for one year and season, retaining zero-smoke cells.
+
+```{r}
+#| label: fig-annual-seasonal-means
+#| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023.'
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 9
+#| fig-height: 5
+#| fig-retina: 2
+
+library(terra)
+library(dplyr)
+library(ggplot2)
+
+# Each band represents one year; its name ends with the four-digit year.
+get_annual_mean <- function(r, season) {
+  layer_years <- as.integer(stringr::str_extract(names(r), "[0-9]{4}$"))
+  if (anyNA(layer_years) || anyDuplicated(layer_years)) {
+    stop("Each raster band must end with a unique four-digit year.")
+  }
+
+  x <- terra::global(r, fun = "mean", na.rm = TRUE)
+
+  tibble::tibble(
+    Year = layer_years,
+    Mean_PM25 = x$mean,
+    Season = season
+  )
+}
+
+annual_pm25 <- bind_rows(
+  get_annual_mean(summer, "Summer"),
+  get_annual_mean(fall, "Fall")
+) |>
+  mutate(Season = factor(Season, levels = c("Summer", "Fall"))) |>
+  arrange(Season, Year)
+
+p_annual <- ggplot(
+  annual_pm25,
+  aes(x = Year, y = Mean_PM25, color = Season, linetype = Season, shape = Season)
+) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  scale_color_manual(values = c("Summer" = "#D55E00", "Fall" = "#0072B2")) +
+  scale_x_continuous(breaks = sort(unique(c(
+    seq(min(annual_pm25$Year), max(annual_pm25$Year), by = 2),
+    max(annual_pm25$Year)
+  )))) +
+  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.05))) +
+  labs(
+    title = expression("Annual Variation in Seasonal Smoke " * PM[2.5]),
+    x = "Year",
+    y = expression("Mean daily smoke " * PM[2.5] * " (" * mu * "g/" * m^3 * ")")
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+print(p_annual)
 ```
 
 Calculate pixel-level Sen's slopes and Mann–Kendall (MK) statistics for summer and fall.
@@ -379,10 +455,6 @@ m <- leaflet(data) %>%
 m  # a map with the default OSM tile layer
 ```
 
-
 # Conclusions
 
-
 # References
-
-
