@@ -6,8 +6,6 @@ format:
   html:
     code-fold: true #Allow readers to show or hide code blocks
     code-summary: "Show Code" #Set the code-folding button label
-  pdf:   
-    documentclass: article
 execute:
   cache: false
   message: false
