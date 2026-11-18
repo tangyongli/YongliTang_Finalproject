@@ -1,19 +1,5 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
-  },
-  {
-    "objectID": "data/Readme.html",
-    "href": "data/Readme.html",
-    "title": "Data Folder",
-    "section": "",
-    "text": "Data Folder\nPlace any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "My Final Project Template",
@@ -33,5 +19,19 @@
     "title": "My Final Project Template",
     "section": "Methods",
     "text": "Methods\n\nData Clean\nRead daily smoke file and check attributes. The dataset daily_smoke covers the entire United States from 2006 to 2023. The column grid_id_10km contains a unique identifier for each 10-km grid cell and will be used to join the data with the GeoID shapefile.\n\n\nShow Code\ndailysmoke = readRDS(\"data/smokePM2pt5_predictions_daily_10km_20060101-20231231.rds\")\n\n# Check object class\nclass(dailysmoke) #  \"data.frame\"\n\n\n[1] \"data.frame\"\n\n\nShow Code\n# Check object structure\nstr(dailysmoke) # 3 variables,`grid_id_10km`,`date`,`smokePM_pred`\n\n\n'data.frame':   80001509 obs. of  3 variables:\n $ grid_id_10km: int  56334 56335 56336 56337 56338 56847 56848 56849 56850 56851 ...\n $ date        : Date, format: \"2006-01-01\" \"2006-01-01\" ...\n $ smokePM_pred: num  3.18 3.3 3.21 3.73 3.81 ...\n\n\nShow Code\n# Number of unique grid IDs\nlength(unique(dailysmoke$grid_id_10km))\n\n\n[1] 100156\n\n\nShow Code\n# Check dimensions\ndim(dailysmoke)\n\n\n[1] 80001509        3\n\n\nShow Code\n# Check column names (if it is a data frame)\nnames(dailysmoke)\n\n\n[1] \"grid_id_10km\" \"date\"         \"smokePM_pred\"\n\n\nShow Code\n# Preview the first few records\nprint(head(dailysmoke))\n\n\n  grid_id_10km       date smokePM_pred\n1        56334 2006-01-01     3.181429\n2        56335 2006-01-01     3.295872\n3        56336 2006-01-01     3.213537\n4        56337 2006-01-01     3.727800\n5        56338 2006-01-01     3.812800\n6        56847 2006-01-01     3.122435\n\n\nShow Code\nsapply(dailysmoke, class)\n\n\ngrid_id_10km         date smokePM_pred \n   \"integer\"       \"Date\"    \"numeric\" \n\n\nCalculate seasonal mean daily smoke PM2.5, retain only summer and fall observations, and return a dataframe containing the Year, Season, and Grid_ID combinations.\n\n\n# A tibble: 5 × 4\n  grid_id_10km  Year Season smokePM_pred\n         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;\n1         1397  2006 fall          0    \n2         1397  2006 summer        0    \n3         1397  2007 fall          0    \n4         1397  2007 summer        0.179\n5         1397  2008 fall          0    \n\n\nLoad the GeoID shapefile, clip it to California’s boundary, and join it with the seasonal mean smoke data to create an sf object named smokeCA.\n\n\n[1] 100156      4\n\n\nSimple feature collection with 5 features and 3 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: -81.81382 ymin: 24.44919 xmax: -81.32322 ymax: 24.57811\nGeodetic CRS:  WGS 84\n    ID  COORDX  COORDY                       geometry\n1 1397 -800000 2770000 POLYGON ((-81.71753 24.5455...\n2 1398 -790000 2770000 POLYGON ((-81.62121 24.5537...\n3 1399 -780000 2770000 POLYGON ((-81.52484 24.5619...\n4 1400 -770000 2770000 POLYGON ((-81.42843 24.5700...\n5 1401 -760000 2770000 POLYGON ((-81.33197 24.5781...\n\n\n$ID\n[1] \"integer\"\n\n$COORDX\n[1] \"numeric\"\n\n$COORDY\n[1] \"numeric\"\n\n$geometry\n[1] \"sfc_POLYGON\" \"sfc\"        \n\n\nSimple feature collection with 1 feature and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -124.482 ymin: 32.52951 xmax: -114.1312 ymax: 42.0095\nGeodetic CRS:  NAD83\n  REGION DIVISION STATEFP  STATENS GEOID     GEOIDFQ STUSPS       NAME LSAD\n1      4        9      06 01779778    06 0400000US06     CA California   00\n  MTFCC FUNCSTAT        ALAND      AWATER    INTPTLAT     INTPTLON\n1 G4000        A 403676564152 20288505023 +37.1551773 -119.5434183\n                        geometry\n1 MULTIPOLYGON (((-119.9999 4...\n\n\n\n\n\n\n\n\n\nConvert the seasonal mean smoke data into raster format\n\n\n[1] \"sf\"         \"data.frame\"\n\n\n\n          GEOMETRY              POINT         LINESTRING            POLYGON \n                 0                  0                  0             257508 \n        MULTIPOINT    MULTILINESTRING       MULTIPOLYGON GEOMETRYCOLLECTION \n                 0                  0                324                  0 \n    CIRCULARSTRING      COMPOUNDCURVE       CURVEPOLYGON         MULTICURVE \n                 0                  0                  0                  0 \n      MULTISURFACE              CURVE            SURFACE  POLYHEDRALSURFACE \n                 0                  0                  0                  0 \n               TIN           TRIANGLE \n                 0                  0 \n\n\nCoordinate Reference System:\n  User input: WGS 84 \n  wkt:\nGEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        AXIS[\"longitude\",east,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n    ID[\"EPSG\",4326]]\n\n\n      xmin       ymin       xmax       ymax \n-124.48200   32.52951 -114.13121   42.00950 \n\n\n[1] \"ID\"           \"COORDX\"       \"COORDY\"       \"Year\"         \"Season\"      \n[6] \"smokePM_pred\" \"geometry\"    \n\n\n[1] 122  73   1\n\n\n\n\nTrend analysis\nApply Sen's slope and the Mann-Kendall test to estimate long-term trends and assess their statistical significance by season and pixel. (Packages: trend, Kendall)\n\n\nPixel-level correlation\nCalculate Pearson correlation coefficients between seasonal drought indices and smoke PM2.5 time series for each pixel. (Package: stats)"
+  },
+  {
+    "objectID": "data/Readme.html",
+    "href": "data/Readme.html",
+    "title": "Data Folder",
+    "section": "",
+    "text": "Data Folder\nPlace any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
   }
 ]
