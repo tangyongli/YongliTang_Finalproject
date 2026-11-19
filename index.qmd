@@ -227,7 +227,7 @@ Annual variation in the California-wide spatial mean of seasonal daily smoke PM�
 
 ```{r}
 #| label: fig-annual-seasonal-means
-#| fig-cap: "California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023."
+#| fig-cap: 'spatial mean of seasonal daily smoke pm2.5 concentrations for summer and fall'
 #| echo: false
 #| message: false
 #| warning: false
@@ -239,6 +239,8 @@ library(terra)
 library(dplyr)
 library(ggplot2)
 
+summer <- rast("data/PM25_CA_summer.tif")
+fall   <- rast("data/PM25_CA_fall.tif")
 # Each band represents one year; its name ends with the four-digit year.
 get_annual_mean <- function(r, season) {
   layer_years <- as.integer(stringr::str_extract(names(r), "[0-9]{4}$"))
@@ -297,7 +299,7 @@ Plot the daily mean smoke PM₂.₅ concentrations for summer and fall. @fig-ann
 
 ```{r}
 #| label: fig-annual-seasonal-spatial-means
-#| fig-cap: "California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023."
+#| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023.'
 #| echo: false
 #| message: false
 #| warning: false
@@ -386,7 +388,7 @@ Visualize pixel-level Sen's slopes and Mann–Kendall (MK) statistics.
 
 ```{r}
 #| label: fig-seasonal-trend
-#| fig-cap: "California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023."
+#| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023.'
 #| echo: false
 #| message: false
 #| warning: false
