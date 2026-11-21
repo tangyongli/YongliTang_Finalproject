@@ -571,6 +571,62 @@ writeRaster(drought_summer_10km, "data/SPEI_CA_summer_10km.tif", overwrite = TRU
 writeRaster(drought_fall_10km, "data/SPEI_CA_fall_10km.tif", overwrite = TRUE)
 
 ```
+Next, I plotted the mean drought index from 2006 to 2023 for summer and fall in California (@fig-yeartrendofdroughtindex). Both seasons showed substantial interannual variability. Notably, SPEI reached its lowest values in 2020 and 2021, indicating more severe drought conditions during these two years.
+
+```{r}
+#| label: fig-yeartrendofdroughtindex
+#| fig-cap: 'Mean drought index from 2006 to 2023 for summer and fall in California'
+#| echo: false
+#| message: false
+#| warning: false
+
+library(terra)
+library(dplyr)
+library(ggplot2)
+
+get_annual_mean <- function(r, season) {
+  layer_years <- as.integer(stringr::str_extract(names(r), "[0-9]{4}$"))
+  if (anyNA(layer_years) || anyDuplicated(layer_years)) {
+    stop("Each raster band must end with a unique four-digit year.")
+  }
+  x <- terra::global(r, fun = "mean", na.rm = TRUE)
+  tibble::tibble(Year = layer_years, Mean_SPEI = x$mean, Season = season)
+}
+
+annual_spei <- bind_rows(
+  get_annual_mean(drought_summer_10km, "Summer"),
+  get_annual_mean(drought_fall_10km, "Fall")
+) |>
+  mutate(Season = factor(Season, levels = c("Summer", "Fall"))) |>
+  arrange(Season, Year)
+
+p_annual <- ggplot(
+  annual_spei,
+  aes(x = Year, y = Mean_SPEI, color = Season, linetype = Season, shape = Season)) +
+  geom_hline(yintercept = 0, color = "grey50", linetype = "dotted") +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  scale_color_manual(values = c("Summer" = "#D55E00", "Fall" = "#0072B2")) +
+  scale_x_continuous(breaks = sort(unique(c(
+    seq(min(annual_spei$Year), max(annual_spei$Year), by = 2),
+    max(annual_spei$Year)
+  )))) +
+  labs(
+    title = "Annual Variation in Seasonal SPEI",
+    x = "Year",
+    y = "California-wide mean SPEI"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+print(p_annual)
+
+```
+
 
 Calculate the pixel-level personal coefficient between season pm2.5 and drought.
 
