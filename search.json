@@ -42,17 +42,17 @@
     "text": "3.3 Seasonal Trend of smoke PM2.5\nCalculate pixel-level Sen’s slopes and Mann–Kendall (MK) statistics for summer and fall.\n\n\nShow Code\nlibrary(terra)\nlibrary(trend)\nlibrary(Kendall)\n\ncalc_sen &lt;- function(x) {\n  x &lt;- x[is.finite(x)]\n  if (length(x) &lt; 10) return(NA_real_)\n  if (length(unique(x)) == 1) return(0)\n  unname(trend::sens.slope(x)$estimates)}\n\ncalc_mk &lt;- function(x) {\n  x &lt;- x[is.finite(x)]\n  if (length(x) &lt; 10) return(NA_real_)\n  if (length(unique(x)) == 1) return(NA_real_)\n  unname(Kendall::MannKendall(x)$sl)}\n\n# Calculate Sen's slope\nsummer_sen &lt;- app(summer, fun = calc_sen)\nfall_sen   &lt;- app(fall, fun = calc_sen)\n# Calculate Mann-Kendall p-values\nsummer_mk &lt;- app(summer, fun = calc_mk)\nfall_mk   &lt;- app(fall, fun = calc_mk)\n\n# Combine slope and p-value into two bands.\nsummer_result &lt;- c(summer_sen, summer_mk)\nfall_result &lt;- c(fall_sen, fall_mk)\nnames(summer_result) &lt;- c(\"Sen_slope\", \"MK_pvalue\")\nnames(fall_result) &lt;- c(\"Sen_slope\", \"MK_pvalue\")\n\n# Save one two-band GeoTIFF per season.\n# writeRaster(summer_result, \"data/PM25_CA_summer_trend.tif\", overwrite = TRUE)\n# writeRaster(fall_result, \"data/PM25_CA_fall_trend.tif\", overwrite = TRUE)\n\n\nVisualize pixel-level Sen’s slopes and Mann–Kendall (MK) statistics.\n\n\n\n\n\n\n\n\nFigure 4: California-wide spatial mean of seasonal daily wildfire smoke \\(\\mathrm{PM}_{2.5}\\) concentrations for summer and fall, 2006–2023."
   },
   {
-    "objectID": "data/Readme.html",
-    "href": "data/Readme.html",
-    "title": "Data Folder",
-    "section": "",
-    "text": "Data Folder\nPlace any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
-  },
-  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "data/Readme.html",
+    "href": "data/Readme.html",
+    "title": "Data Folder",
+    "section": "",
+    "text": "Data Folder\nPlace any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
   }
 ]
