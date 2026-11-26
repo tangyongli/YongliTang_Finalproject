@@ -14,6 +14,7 @@ format:
 execute:
   cache: false
   message: false
+  warning: false
 date: today
 date-format: long
 ---
@@ -55,7 +56,7 @@ Drought ranges follow the rounded legend labels on [Drought.gov](https://www.dro
 
 ### 2.2.1 Data Clean
 
-```{r setup, echo=F, message=F, warning=F}
+```{r setup, echo=F}
 
 library(tidyverse)
 library(leaflet)
@@ -94,7 +95,7 @@ print(head(dailysmoke))
 
 Calculate seasonal mean daily smoke PM2.5, retain only summer and fall observations, and return a dataframe containing the Year, Season, and Grid_ID combinations.
 
-```{r data, echo=F, message=F, warning=F}
+```{r data, echo=F}
 
 grid_ids <- unique(dailysmoke$grid_id_10km)
 smoke_season <- dailysmoke |>
@@ -157,7 +158,7 @@ smokeCA <- left_join(grid_CA,smoke_season,by=c("ID" = "grid_id_10km"))
 
 Convert the seasonal mean smoke data into raster format.
 
-```{r conv,echo=F, message=F, warning=F}
+```{r conv,echo=F}
 library(sf)
 library(terra)
 
@@ -359,9 +360,9 @@ California-wide seasonal mean daily wildfire smoke PM₂.₅ concentrations were
 
 Variability increased during 2017-2021, with the highest fall concentration in 2020 (15.70 µg/m³) and the highest summer concentration in 2021 (10.64 µg/m³). These peaks coincided with major wildfire activity, including the August Complex and Creek fires in 2020 and the Dixie and Caldor fires in 2021. Drought, extreme heat, and reduced snowpack likely helped create conditions favorable for severe wildfire activity in 2021. The Concentrations declined sharply in 2022-2023, highlighting the influence of episodic high-smoke years.
 
-## 3.3 Seasonal Trend of smoke PM2.5
+## 3.3 Seasonal Trend of Smoke PM2.5
 
-```{r seasonal-trends, message=FALSE, warning=FALSE}
+```{r seasonal-trends}
 library(terra)
 library(trend)
 library(Kendall)
@@ -400,13 +401,11 @@ As shown in @fig-seasonal-trend, smoke PM₂.₅ concentrations generally increa
 
 ```{r}
 #| label: fig-seasonal-trend
-#| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023.'
+#| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006-2023.'
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-width: 15
-#| fig-height: 8
-#| fig-retina: 3
+
 
 # Plot the summer and fall trend
 library(terra)
