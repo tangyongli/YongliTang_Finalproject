@@ -240,7 +240,7 @@ Calculate Pearson correlation coefficients between seasonal drought indices and 
 
 ## 3.1 Annual Spatial Mean of Smoke PM2.5
 
-Plot the daily mean smoke PM₂.₅ concentrations for summer and fall. Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns (@fig-annual-seasonal-spatial-means). In summer, higher concentrations were more widespread across northern California, with the strongest hotspot in the northern interior. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.
+Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns (@fig-annual-seasonal-spatial-means). In summer, higher concentrations were more widespread across northern California. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.
 
 ```{r}
 #| label: fig-annual-seasonal-spatial-means
@@ -289,19 +289,21 @@ p_mean <- ggplot() +
 # ggsave("data/PM25_CA_mean_summer_fall.png", p_mean, width = 10, height = 7, dpi = 300, bg = "white")
 ```
 
-## 3.2 Annual Temporary Variation of Smoke PM2.5
+## 3.2 Overall Annual Temporary Trends in Smoke PM2.5
 
-Annual variation in the California-wide spatial mean of seasonal daily smoke PM₂.₅ is shown in @fig-annual-seasonal-means. Each point averages the valid raster cells for one year and season, retaining zero-smoke cells.
+As shown in @fig-annual-seasonal-means, California-wide seasonal mean daily wildfire smoke PM₂.₅ concentrations were generally low before 2016, except for a summer peak in 2008 that coincided with widespread lightning-triggered fires.
+
+Variability increased during 2017-2021, with the highest fall concentration in 2020 (15.70 µg/m³) and the highest summer concentration in 2021 (10.64 µg/m³). These peaks coincided with major wildfire activity, including the August Complex and Creek fires in 2020 and the Dixie and Caldor fires in 2021. Drought, extreme heat, and reduced snowpack likely helped create conditions favorable for severe wildfire activity in 2021. The Concentrations declined sharply in 2022-2023, highlighting the influence of episodic high-smoke years.
 
 ```{r}
 #| label: fig-annual-seasonal-means
 #| fig-cap: 'spatial mean of seasonal daily smoke pm2.5 concentrations for summer and fall'
 #| echo: false
-#| message: false
-#| warning: false
 #| fig-width: 9
 #| fig-height: 5
 #| fig-retina: 2
+
+# Each point averages the valid raster cells for one year and season, retaining #zero-smoke cells.
 
 library(terra)
 library(dplyr)
@@ -350,17 +352,12 @@ p_annual <- ggplot(
   theme(
     plot.title = element_text(face = "bold"),
     legend.position = "top",
-    panel.grid.minor = element_blank()
-  )
+    panel.grid.minor = element_blank())
 
 print(p_annual)
 ```
 
-California-wide seasonal mean daily wildfire smoke PM₂.₅ concentrations were generally low before 2016, except for a summer peak in 2008 that coincided with widespread lightning-triggered fires.
-
-Variability increased during 2017-2021, with the highest fall concentration in 2020 (15.70 µg/m³) and the highest summer concentration in 2021 (10.64 µg/m³). These peaks coincided with major wildfire activity, including the August Complex and Creek fires in 2020 and the Dixie and Caldor fires in 2021. Drought, extreme heat, and reduced snowpack likely helped create conditions favorable for severe wildfire activity in 2021. The Concentrations declined sharply in 2022-2023, highlighting the influence of episodic high-smoke years.
-
-## 3.3 Seasonal Trend of Smoke PM2.5
+## 3.3 Spatial Trends in Smoke PM2.5
 
 ```{r seasonal-trends}
 library(terra)
@@ -405,7 +402,6 @@ As shown in @fig-seasonal-trend, smoke PM₂.₅ concentrations generally increa
 #| echo: false
 #| message: false
 #| warning: false
-
 
 # Plot the summer and fall trend
 library(terra)
@@ -489,7 +485,6 @@ p <- patchwork::wrap_plots(
 
 ```{r}
 library(terra)
-
 drought_index <- rast("data/nclimgrid-spei-pearson-01_CA.nc")
 dates <- time(drought_index)
 years <- as.integer(format(dates, "%Y"))
@@ -523,10 +518,9 @@ writeRaster(drought_fall, "data/SPEI_CA_fall.tif", overwrite = TRUE)
 
 ```
 
-The season mean drought index above has a spatial resolution of 4km, whereas our PM2.5 data has a spatial resolution of 10km. Now, re sample the drought index to the resolution of pm2.5.
-
 ```{r}
 library(terra)
+# The season mean drought index above has a spatial resolution of 4km, whereas our # PM2.5 data has a spatial resolution of 10km. Now, re sample the drought index to # the resolution of pm2.5.
 
 # Read seasonal rasters.
 summer <- rast("data/PM25_CA_summer.tif")
@@ -565,7 +559,7 @@ writeRaster(drought_fall_10km, "data/SPEI_CA_fall_10km.tif", overwrite = TRUE)
 
 ```
 
-Next, I plotted the mean drought index from 2006 to 2023 for summer and fall in California (@fig-yeartrendofdroughtindex). Both seasons showed substantial interannual variability. Notably, SPEI reached its lowest values in 2020 and 2021, indicating more severe drought conditions during these two years.
+Both seasons showed substantial interannual variability for drought index (@fig-yeartrendofdroughtindex). Notably, SPEI reached its lowest values in 2020 and 2021, indicating more severe drought conditions during these two years.
 
 ```{r}
 #| label: fig-yeartrendofdroughtindex
@@ -621,9 +615,8 @@ print(p_annual)
 
 ```
 
-Calculate the pixel-level personal coefficient between season pm2.5 and drought.
-
 ```{r}
+# Calculate the pixel-level personal coefficient between season pm2.5 and drought.
 # Match bands to 2006–2023 using the year at the end of each band name.
 match_years <- function(r) {
   years <- as.integer(sub(".*([0-9]{4})$", "\\1", names(r)))
