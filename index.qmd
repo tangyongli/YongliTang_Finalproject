@@ -242,7 +242,58 @@ Calculate Pearson correlation coefficients between seasonal drought indices and 
 
 # 3. Results
 
-## 3.1 Annual temporary variation of smoke PM2.5
+## 3.1 Annual Spatial Mean of Smoke PM2.5
+
+Plot the daily mean smoke PM₂.₅ concentrations for summer and fall. @fig-annual-seasonal-spatial-means Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns. In summer, higher concentrations were more widespread across northern California, with the strongest hotspot in the northern interior. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.
+
+```{r}
+#| label: fig-annual-seasonal-spatial-means
+#| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023.'
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 9
+#| fig-height: 5
+#| fig-retina: 2
+
+library(terra)
+library(tidyterra)
+library(ggplot2)
+
+# Read seasonal rasters 
+summer <- rast("data/PM25_CA_summer.tif")
+fall   <- rast("data/PM25_CA_fall.tif")
+
+# plot the summer and fall mean
+# Calculate each pixel's mean across years, retaining zero-smoke years.
+summer_mean <- app(summer, fun = mean, na.rm = TRUE)
+fall_mean <- app(fall, fun = mean, na.rm = TRUE)
+
+mean_maps <- c(summer_mean, fall_mean)
+names(mean_maps) <- c("Summer", "Fall")
+
+# Plot summer and fall side by side with a shared color scale.
+p_mean <- ggplot() +
+  geom_spatraster(data = mean_maps) +
+  facet_wrap(~lyr, nrow = 1) +
+  scale_fill_viridis_c(
+    option = "magma",
+    name = expression(atop("Mean daily smoke " * plain(PM)[2.5],
+                           "(" * mu * "g/" * m^3 * ")")),
+    na.value = "transparent") +
+  labs(title = expression("Mean Seasonal Smoke " * plain(PM)[2.5])) +
+  theme_void(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    strip.text = element_text(face = "bold"),
+    legend.title = element_text(size = 11),
+    legend.position = "right")
+
+print(p_mean)
+# ggsave("data/PM25_CA_mean_summer_fall.png", p_mean, width = 10, height = 7, dpi = 300, bg = "white")
+```
+
+## 3.2 Annual Temporary Variation of Smoke PM2.5
 
 Annual variation in the California-wide spatial mean of seasonal daily smoke PM₂.₅ is shown in @fig-annual-seasonal-means. Each point averages the valid raster cells for one year and season, retaining zero-smoke cells.
 
@@ -314,61 +365,7 @@ California-wide seasonal mean daily wildfire smoke PM₂.₅ concentrations were
 
 Variability increased during 2017-2021, with the highest fall concentration in 2020 (15.70 µg/m³) and the highest summer concentration in 2021 (10.64 µg/m³). These peaks coincided with major wildfire activity, including the August Complex and Creek fires in 2020 and the Dixie and Caldor fires in 2021. Drought, extreme heat, and reduced snowpack likely helped create conditions favorable for severe wildfire activity in 2021. The Concentrations declined sharply in 2022-2023, highlighting the influence of episodic high-smoke years.
 
-## 3.2 Annual Spatial mean of smoke PM2.5
-
-Plot the daily mean smoke PM₂.₅ concentrations for summer and fall. @fig-annual-seasonal-spatial-means Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns. In summer, higher concentrations were more widespread across northern California, with the strongest hotspot in the northern interior. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.
-
-```{r}
-#| label: fig-annual-seasonal-spatial-means
-#| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023.'
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-width: 9
-#| fig-height: 5
-#| fig-retina: 2
-
-library(terra)
-library(tidyterra)
-library(ggplot2)
-
-# Read seasonal rasters 
-summer <- rast("data/PM25_CA_summer.tif")
-fall   <- rast("data/PM25_CA_fall.tif")
-
-# plot the summer and fall mean
-# Calculate each pixel's mean across years, retaining zero-smoke years.
-summer_mean <- app(summer, fun = mean, na.rm = TRUE)
-fall_mean <- app(fall, fun = mean, na.rm = TRUE)
-
-mean_maps <- c(summer_mean, fall_mean)
-names(mean_maps) <- c("Summer", "Fall")
-
-# Plot summer and fall side by side with a shared color scale.
-p_mean <- ggplot() +
-  geom_spatraster(data = mean_maps) +
-  facet_wrap(~lyr, nrow = 1) +
-  scale_fill_viridis_c(
-    option = "magma",
-    name = expression(atop("Mean daily smoke " * plain(PM)[2.5],
-                           "(" * mu * "g/" * m^3 * ")")),
-    na.value = "transparent") +
-  labs(title = expression("Mean Seasonal Smoke " * plain(PM)[2.5])) +
-  theme_void(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold", size = 14),
-    strip.text = element_text(face = "bold"),
-    legend.title = element_text(size = 11),
-    legend.position = "right")
-
-print(p_mean)
-# ggsave("data/PM25_CA_mean_summer_fall.png", p_mean, width = 10, height = 7, dpi = 300, bg = "white")
-
-```
-
 ## 3.3 Seasonal Trend of smoke PM2.5
-
-
 
 ```{r seasonal-trends, message=FALSE, warning=FALSE}
 library(terra)
@@ -496,11 +493,9 @@ print(p)
 
 ```
 
-## 3.4 Drought index
+## 3.4 The Association between Drought  and Smoke PM2.5
 
 ```{r}
-
-
 library(terra)
 
 drought_index <- rast("data/nclimgrid-spei-pearson-01_CA.nc")
@@ -577,6 +572,7 @@ writeRaster(drought_summer_10km, "data/SPEI_CA_summer_10km.tif", overwrite = TRU
 writeRaster(drought_fall_10km, "data/SPEI_CA_fall_10km.tif", overwrite = TRUE)
 
 ```
+
 Next, I plotted the mean drought index from 2006 to 2023 for summer and fall in California (@fig-yeartrendofdroughtindex). Both seasons showed substantial interannual variability. Notably, SPEI reached its lowest values in 2020 and 2021, indicating more severe drought conditions during these two years.
 
 ```{r}
@@ -633,7 +629,6 @@ print(p_annual)
 
 ```
 
-
 Calculate the pixel-level personal coefficient between season pm2.5 and drought.
 
 ```{r}
@@ -676,7 +671,9 @@ print(cor_summer)
 print(cor_fall)
 
 ```
+
 @fig-correl shows the Pearson correlation between PM2.5 and drought index for summer and fall. Smoke PM₂.₅ and SPEI were negatively correlated across most of California in both summer and fall, indicating that drier years generally had higher smoke concentrations. Correlations were stronger and more widespread in fall, while summer showed greater spatial variation, with weaker correlations along parts of the coast and in southern California.
+
 ```{r}
 #| label: fig-correl
 #| fig-cap: 'Pixel-wise Pearson correlation between PM₂.₅ and drought index during summer and #fall, 2006-2023.'
@@ -731,8 +728,7 @@ ggsave("data/PM25_SPEI_correlation.png", p, width = 10, height = 6, dpi = 300, b
 
 This project analyzed trends in summer and fall wildfire smoke PM₂.₅ concentrations from 2006 to 2023 and examined their association with drought conditions. There are several main findings.
 
-Summer and fall smoke PM₂.₅ concentrations showed substantial year-to-year variation from 2016 onward, with peaks in 2020 and 2021.
-Northwestern and central California showed the strongest increasing trends in smoke PM₂.₅ during both seasons, while Southern California experienced smaller increases.
+Summer and fall smoke PM₂.₅ concentrations showed substantial year-to-year variation from 2016 onward, with peaks in 2020 and 2021. Northwestern and central California showed the strongest increasing trends in smoke PM₂.₅ during both seasons, while Southern California experienced smaller increases.
 
 Drought conditions generally became more severe, particularly in 2020 and 2021. Smoke PM₂.₅ concentrations and SPEI were negatively correlated across most of California in both seasons, indicating that drier years generally had higher smoke concentrations. Correlations were stronger and more widespread in fall, while summer showed greater spatial variation, with weaker correlations along parts of the coast and in Southern California.
 
