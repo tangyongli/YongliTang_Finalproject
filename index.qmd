@@ -18,12 +18,6 @@ date: today
 date-format: long
 ---
 
-```{r}
-#1
-library(rmarkdown)
-# setwd("E:/PhD/course/GEO511/finialproject/YongliTang_Finalproject")
-```
-
 # 1. Introduction
 
 Fine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Human-caused ignitions have extended the U.S. wildfire season beyond the period traditionally associated with lightning-caused fires (Balch et al., 2017). As wildfire activity and smoke emissions may change over time, understanding long-term trends in smoke-related PM₂.₅ is important for identifying changes in population exposure and informing air quality management.
@@ -37,10 +31,11 @@ This study will examine long-term trends in wildfire smoke PM₂.₅ across Cali
 ## 2.1 Materials
 
 - Daily 10km wildfire smoke PM2.5 data, 2006-2023\
-  The wildfire smoke PM2.5 product is produced with a ML method, and the overall R2 is 0.63. Model performance varied spatially, with often very high performance at EPA monitors throughout California, the Pacific Northwest, the upper Midwest, and the Northeast and lower performance at monitors in the Southwest and the South. The dataset could be accessed on [Environmental change and Human Outcomes lab.](https://www.stanfordecholab.com/wildfire_smoke.) A smoke PM2.5 prediction of 0 in this file means that the grid cell-day did have a smoke day but did not have elevated PM2.5.
+  This machine-learning product has an overall R² of 0.63, with performance varying regionally. A zero prediction indicates a smoke day without elevated PM₂.₅. Data are available from the [Environmental change and Human Outcomes lab.](https://www.stanfordecholab.com/wildfire_smoke.)
 
-- Drought data\
-  Standardized Precipitation Evapotranspiration Index (SPEI) data will be used to measure the drought level. The SPEI data cover the contiguous U.S. from 1979 to the present at the spatial resolution of 4 km and are updated monthly. This drought index considers precipitation and potential evapotranspiration to indicate the spatial and temporal extents of drought conditions. The SPEI data can be access through [National Integrated Drought Information Syatem](https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly). Negative SPEI values indicate drier conditions, with more negative values representing greater drought severity, whereas positive values indicate wetter conditions (Table 1).
+- Drought data
+
+  Monthly Standardized Precipitation Evapotranspiration Index (SPEI) data at 4 km resolution combine precipitation and potential evapotranspiration to characterize drought. More negative values indicate greater drought severity, while positive values indicate wetter conditions (Table 1). The SPEI data can be access through [National Integrated Drought Information Syatem](https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly).
 
   **Table 1. The drought level by SPEI category**
 
@@ -137,10 +132,10 @@ grid_10km <- sf::st_read("data/10km_grid_wgs84/10km_grid_wgs84.shp", quiet = TRU
 # dim(grid_10km)
 # head(grid_10km,5)
 #Get the data type of every column
-print(sapply(grid_10km, class))
+# print(sapply(grid_10km, class))
 # Load the geoshapefile of California
 CA <- sf::st_read("data/tl_2025_us_state/tl_2025_us_state.shp", quiet = TRUE) |> dplyr::filter(STATEFP == "06")
-head(CA,5)
+# head(CA,5)
 
 # Match the CRS and combine California's polygons into one boundary.
 CA_boundary <- st_union(st_transform(CA, st_crs(grid_10km)))
@@ -160,7 +155,7 @@ smokeCA <- left_join(grid_CA,smoke_season,by=c("ID" = "grid_id_10km"))
 
 ```
 
-Convert the seasonal mean smoke data into raster format
+Convert the seasonal mean smoke data into raster format.
 
 ```{r conv,echo=F, message=F, warning=F}
 library(sf)
@@ -174,7 +169,7 @@ cat("- Number of features:", nrow(smokeCA), "\n")
 cat("- Number of attributes:", ncol(st_drop_geometry(smokeCA)), "\n\n")
 
 # Check attribute columns
-print(names(smokeCA))
+# print(names(smokeCA))
 
 # Transform the 10-km grid to EPSG:5070
 smokeCA_proj <- st_transform(smokeCA, 5070)
@@ -244,7 +239,7 @@ Calculate Pearson correlation coefficients between seasonal drought indices and 
 
 ## 3.1 Annual Spatial Mean of Smoke PM2.5
 
-Plot the daily mean smoke PM₂.₅ concentrations for summer and fall. @fig-annual-seasonal-spatial-means Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns. In summer, higher concentrations were more widespread across northern California, with the strongest hotspot in the northern interior. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.
+Plot the daily mean smoke PM₂.₅ concentrations for summer and fall. Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns (@fig-annual-seasonal-spatial-means). In summer, higher concentrations were more widespread across northern California, with the strongest hotspot in the northern interior. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.
 
 ```{r}
 #| label: fig-annual-seasonal-spatial-means
@@ -289,7 +284,7 @@ p_mean <- ggplot() +
     legend.title = element_text(size = 11),
     legend.position = "right")
 
-print(p_mean)
+# print(p_mean)
 # ggsave("data/PM25_CA_mean_summer_fall.png", p_mean, width = 10, height = 7, dpi = 300, bg = "white")
 ```
 
@@ -324,8 +319,7 @@ get_annual_mean <- function(r, season) {
   tibble::tibble(
     Year = layer_years,
     Mean_PM25 = x$mean,
-    Season = season)
-  }
+    Season = season)}
 
 annual_pm25 <- bind_rows(
   get_annual_mean(summer, "Summer"),
@@ -447,8 +441,7 @@ plot_slope <- function(x, title) {
       midpoint = 0,
       limits = c(-slope_limit, slope_limit),
       name = expression(atop("Sen's slope", "(" * mu * "g/" * m^3 * ")/year")),
-      na.value = "transparent"
-    ) +
+      na.value = "transparent") +
     labs(title = title) +
     map_theme}
 
@@ -488,7 +481,7 @@ p <- patchwork::wrap_plots(
   byrow = TRUE,
   guides = "collect") &
   theme(legend.position = "bottom", legend.box = "vertical")
-print(p)
+# print(p)
 # ggsave("data/PM25_CA_trend_2x2.png", p, width = 10, height = 10, dpi = 300, bg = "white")
 
 ```
@@ -531,7 +524,7 @@ writeRaster(drought_fall, "data/SPEI_CA_fall.tif", overwrite = TRUE)
 
 ```
 
-The season mean drought index above has a spatial resolution of 4km, whereas our PM2.5 data has a spatial resolution of 10km. Now, resample the drought index to the resolution of pm2.5.
+The season mean drought index above has a spatial resolution of 4km, whereas our PM2.5 data has a spatial resolution of 10km. Now, re sample the drought index to the resolution of pm2.5.
 
 ```{r}
 library(terra)
@@ -667,8 +660,7 @@ pixel_pearson <- function(pm25, drought) {
 cor_summer <- pixel_pearson(summer, drought_summer_10km)
 cor_fall <- pixel_pearson(fall, drought_fall_10km)
 
-print(cor_summer)
-print(cor_fall)
+
 
 ```
 
