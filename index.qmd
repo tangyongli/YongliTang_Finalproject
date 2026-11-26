@@ -4,6 +4,11 @@ author: Yongli Tang
 subtitle: 'Seasonal Trend in Wildfire Smoke PM2.5 in California and its association with Drought'
 format:
   html:
+    toc: true
+    toc-location: left
+    toc-title: "Outline"
+    toc-depth: 3
+    toc-expand: true
     code-fold: true #Allow readers to show or hide code blocks
     code-summary: "Show Code" #Set the code-folding button label
 execute:
