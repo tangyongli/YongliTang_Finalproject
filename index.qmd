@@ -1,5 +1,5 @@
 ---
-title: "My Final Project Template"
+title: "The trend of SMOKE-PM2.5 and its association with drought"
 author: Yongli Tang
 subtitle: 'Seasonal Trend in Wildfire Smoke PM2.5 in California and its association with Drought'
 format:
@@ -81,20 +81,20 @@ Read daily smoke file and check attributes. The dataset `daily_smoke` covers the
 ```{r}
 dailysmoke = readRDS("data/smokePM2pt5_predictions_daily_10km_20060101-20231231.rds")
 
-# Check object class
-class(dailysmoke) #  "data.frame"
-
-# Check object structure
-str(dailysmoke) # 3 variables,`grid_id_10km`,`date`,`smokePM_pred`
-# Number of unique grid IDs
-length(unique(dailysmoke$grid_id_10km))
-# Check dimensions
-dim(dailysmoke)
-# Check column names (if it is a data frame)
-names(dailysmoke)
+# # Check object class
+# class(dailysmoke) #  "data.frame"
+# 
+# # Check object structure
+# str(dailysmoke) # 3 variables,`grid_id_10km`,`date`,`smokePM_pred`
+# # Number of unique grid IDs
+# length(unique(dailysmoke$grid_id_10km))
+# # Check dimensions
+# dim(dailysmoke)
+# # Check column names (if it is a data frame)
+# names(dailysmoke)
 # Preview the first few records
 print(head(dailysmoke))
-sapply(dailysmoke, class)
+# sapply(dailysmoke, class)
 ```
 
 Calculate seasonal mean daily smoke PM2.5, retain only summer and fall observations, and return a dataframe containing the Year, Season, and Grid_ID combinations.
@@ -134,8 +134,8 @@ library(sf)
 
 # Load the 10 km grid shapefile
 grid_10km <- sf::st_read("data/10km_grid_wgs84/10km_grid_wgs84.shp", quiet = TRUE)
-dim(grid_10km)
-head(grid_10km,5)
+# dim(grid_10km)
+# head(grid_10km,5)
 #Get the data type of every column
 print(sapply(grid_10km, class))
 # Load the geoshapefile of California
@@ -196,7 +196,7 @@ r <- terra::rast(
   ymin = y_min, ymax = y_max,
   crs = terra::crs(smokeCA_vect))
 stopifnot(all(abs(terra::res(r) - cell_size) < 1e-8))
-print(dim(r))
+
 
 # Get unique seasons and years
 # Use consecutive years from the earliest to the latest observed year.
@@ -368,7 +368,7 @@ print(p_mean)
 
 ## 3.3 Seasonal Trend of smoke PM2.5
 
-Calculate pixel-level Sen's slopes and Mann–Kendall (MK) statistics for summer and fall.
+
 
 ```{r seasonal-trends, message=FALSE, warning=FALSE}
 library(terra)
@@ -405,7 +405,7 @@ names(fall_result) <- c("Sen_slope", "MK_pvalue")
 # writeRaster(fall_result, "data/PM25_CA_fall_trend.tif", overwrite = TRUE)
 ```
 
-Visualize pixel-level Sen's slopes and Mann–Kendall (MK) statistics.
+As shown in @fig-seasonal-trend, smoke PM₂.₅ concentrations generally increased across most of California. The largest summer increases occurred in northwestern California, while fall increases were most pronounced in northern and east-central California. Statistically significant increases were observed in both seasons.
 
 ```{r}
 #| label: fig-seasonal-trend
@@ -507,8 +507,8 @@ drought_index <- rast("data/nclimgrid-spei-pearson-01_CA.nc")
 dates <- time(drought_index)
 years <- as.integer(format(dates, "%Y"))
 months <- as.integer(format(dates, "%m"))
-print(range(dates))  # Both dates
-print(range(months))  # Both dates
+cat("Date range:", range(dates), "\n")
+cat("Month range:", range(months), "\n")
 get_seasonal_spei <- function(season_months, season_name) {
   idx <- which(years %in% 2006:2023 & months %in% season_months)
   for (y in 2006:2023) {
@@ -525,9 +525,9 @@ get_seasonal_spei <- function(season_months, season_name) {
 # Average June–August and September–November for each year.
 drought_summer <- get_seasonal_spei(6:8, "summer")
 drought_fall <- get_seasonal_spei(9:11, "fall")
-print(drought_summer)
-print('--------------------')
-print(drought_fall)
+# print(drought_summer)
+# print('--------------------')
+# print(drought_fall)
 
 # Save 18 annual bands for each season, covering 2006-2023.
 writeRaster(drought_summer, "data/SPEI_CA_summer.tif", overwrite = TRUE)
@@ -568,9 +568,9 @@ drought_summer_10km <- align_drought(drought_summer, summer)
 drought_fall_10km <- align_drought(drought_fall, fall)
 
 # Check the resulting grids.
-print(drought_summer_10km)
-print(drought_fall_10km)
-print(rbind(PM25 = res(summer), SPEI = res(drought_summer_10km)))
+# print(drought_summer_10km)
+# print(drought_fall_10km)
+# print(rbind(PM25 = res(summer), SPEI = res(drought_summer_10km)))
 
 # Save the aligned seasonal rasters.
 writeRaster(drought_summer_10km, "data/SPEI_CA_summer_10km.tif", overwrite = TRUE)
@@ -721,12 +721,19 @@ p <- ggplot() +
     barwidth = grid::unit(0.6, "cm")
   ))
   
-
-print(p)
+# 
+# print(p)
 ggsave("data/PM25_SPEI_correlation.png", p, width = 10, height = 6, dpi = 300, bg = "white")
 
 ```
 
-# Conclusions
+# 4. Conclusions
 
-# References
+This project analyzed trends in summer and fall wildfire smoke PM₂.₅ concentrations from 2006 to 2023 and examined their association with drought conditions. There are several main findings.
+
+Summer and fall smoke PM₂.₅ concentrations showed substantial year-to-year variation from 2016 onward, with peaks in 2020 and 2021.
+Northwestern and central California showed the strongest increasing trends in smoke PM₂.₅ during both seasons, while Southern California experienced smaller increases.
+
+Drought conditions generally became more severe, particularly in 2020 and 2021. Smoke PM₂.₅ concentrations and SPEI were negatively correlated across most of California in both seasons, indicating that drier years generally had higher smoke concentrations. Correlations were stronger and more widespread in fall, while summer showed greater spatial variation, with weaker correlations along parts of the coast and in Southern California.
+
+# 5. References
