@@ -390,7 +390,7 @@ Figure&nbsp;1: Spatial distribution of the 10 km grid cells across California.
 <div id="fig-annual-seasonal-means" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-annual-seasonal-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-annual-seasonal-means-1.png" class="img-fluid figure-img" width="864">
+<img src="index_files/figure-html/fig-annual-seasonal-means-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-annual-seasonal-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: spatial mean of seasonal daily smoke pm2.5 concentrations for summer and fall
@@ -562,7 +562,7 @@ Figure&nbsp;3: Mean drought index from 2006 to 2023 for summer and fall in Calif
 <details class="code-fold">
 <summary>Show Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the pixel-level personal coefficient between season pm2.5 and drought.</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Match bands to 2006–2023 using the year at the end of each band name.</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Match bands to 2006-2023 using the year at the end of each band name.</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>match_years <span class="ot">&lt;-</span> <span class="cf">function</span>(r) {</span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  years <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">sub</span>(<span class="st">".*([0-9]{4})$"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">1"</span>, <span class="fu">names</span>(r)))</span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">anyNA</span>(years) <span class="sc">||</span> <span class="fu">anyDuplicated</span>(years) <span class="sc">||</span> <span class="sc">!</span><span class="fu">all</span>(<span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span> <span class="sc">%in%</span> years)) {</span>
