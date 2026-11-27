@@ -478,8 +478,9 @@ drought_index <- rast("data/nclimgrid-spei-pearson-01_CA.nc")
 dates <- time(drought_index)
 years <- as.integer(format(dates, "%Y"))
 months <- as.integer(format(dates, "%m"))
-cat("Date range:", range(dates), "\n")
-cat("Month range:", range(months), "\n")
+
+# cat("Date range:", range(dates), "\n")
+# cat("Month range:", range(months), "\n")
 get_seasonal_spei <- function(season_months, season_name) {
   idx <- which(years %in% 2006:2023 & months %in% season_months)
   for (y in 2006:2023) {
