@@ -88,9 +88,10 @@ dailysmoke = readRDS("data/smokePM2pt5_predictions_daily_10km_20060101-20231231.
 # dim(dailysmoke)
 # # Check column names (if it is a data frame)
 # names(dailysmoke)
+# sapply(dailysmoke, class)
 # Preview the first few records
 print(head(dailysmoke))
-# sapply(dailysmoke, class)
+
 ```
 
 Calculate seasonal mean daily smoke PM2.5, retain only summer and fall observations, and return a dataframe containing the Year, Season, and Grid_ID combinations.
@@ -111,7 +112,7 @@ smoke_season <- dailysmoke |>
   complete(grid_id_10km = grid_ids, Year = 2006:2023, Season = c("summer", "fall"), 
            fill = list(dailysmokePM_pred = 0))
 
-print(head(smoke_season,5))
+print(head(smoke_season,2))
 saveRDS(smoke_season, "data/smoke_seasonsummerandfall.rds")
 rm(dailysmoke)
 
@@ -190,7 +191,6 @@ r <- terra::rast(
   crs = terra::crs(smokeCA_vect))
 stopifnot(all(abs(terra::res(r) - cell_size) < 1e-8))
 
-
 # Get unique seasons and years
 # Use consecutive years from the earliest to the latest observed year.
 years <- seq.int(min(smokeCA_proj$Year, na.rm = TRUE), max(smokeCA_proj$Year, na.rm = TRUE))
@@ -242,9 +242,7 @@ Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spat
 ```{r}
 #| label: fig-annual-seasonal-spatial-means
 #| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006–2023.'
-#| echo: false
-#| message: false
-#| warning: false
+
 
 library(terra)
 library(tidyterra)
@@ -292,7 +290,6 @@ Variability increased during 2017-2021, with the highest fall concentration in 2
 ```{r}
 #| label: fig-annual-seasonal-means
 #| fig-cap: 'spatial mean of seasonal daily smoke pm2.5 concentrations for summer and fall'
-#| echo: false
 
 # Each point averages the valid raster cells for one year and season, retaining #zero-smoke cells.
 
@@ -350,6 +347,8 @@ print(p_annual)
 
 ## 3.3 Spatial Trends in Smoke PM2.5
 
+As shown in @fig-seasonal-trend, smoke PM₂.₅ concentrations generally increased across most of California. The largest summer increases occurred in northwestern California, while fall increases were most pronounced in northern and east-central California. Statistically significant increases were observed in both seasons.
+
 ```{r seasonal-trends}
 library(terra)
 library(trend)
@@ -384,8 +383,6 @@ names(fall_result) <- c("Sen_slope", "MK_pvalue")
 # writeRaster(summer_result, "data/PM25_CA_summer_trend.tif", overwrite = TRUE)
 # writeRaster(fall_result, "data/PM25_CA_fall_trend.tif", overwrite = TRUE)
 ```
-
-As shown in @fig-seasonal-trend, smoke PM₂.₅ concentrations generally increased across most of California. The largest summer increases occurred in northwestern California, while fall increases were most pronounced in northern and east-central California. Statistically significant increases were observed in both seasons.
 
 ```{r}
 #| label: fig-seasonal-trend
@@ -524,7 +521,7 @@ align_drought <- function(drought, pm25) {
   if (crs(drought) == "" || crs(target) == "") {
     stop("Missing CRS information.")
   }
-  cat("Same CRS:", same.crs(drought, target), "\n")
+  # cat("Same CRS:", same.crs(drought, target), "\n")
   if (same.crs(drought, target)) {
     result <- resample(drought, target, method = "average")
   } else {
@@ -554,8 +551,6 @@ Both seasons showed substantial interannual variability for drought index (@fig-
 ```{r}
 #| label: fig-yeartrendofdroughtindex
 #| fig-cap: 'Mean drought index from 2006 to 2023 for summer and fall in California'
-
-
 library(terra)
 library(dplyr)
 library(ggplot2)
