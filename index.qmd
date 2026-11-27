@@ -23,20 +23,20 @@ date-format: long
 
 Fine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Human-caused ignitions have extended the U.S. wildfire season beyond the period traditionally associated with lightning-caused fires (Balch et al., 2017). As wildfire activity and smoke emissions may change over time, understanding long-term trends in smoke-related PM₂.₅ is important for identifying changes in population exposure and informing air quality management.
 
-Drought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. (Wang et al., 2022) found that increasing summer PM₂.₅ concentrations in the northwestern United States were primarily driven by increases in total carbonaceous aerosols, with stronger trends under drought conditions. This suggests that drought may play an important role in shaping long-term changes in smoke-related PM₂.₅.
+Drought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. Wang et al. (2022) found that increasing summer PM₂.₅ concentrations in the northwestern United States were primarily driven by increases in total carbonaceous aerosols, with stronger trends under drought conditions. This suggests that drought may play an important role in shaping long-term changes in smoke-related PM₂.₅.
 
-This study will examine long-term trends in wildfire smoke PM₂.₅ across California during summer and fall, the primary seasons of wildfire activity. Sen's slope and the Mann–Kendall test will be used to characterize spatial trends from 2006 to 2023. Pixel-level Pearson correlation analysis will then examine the associations between drought conditions and smoke-related PM₂.₅, identifying their spatial patterns across California.
+This study will examine long-term trends in wildfire smoke PM₂.₅ across California during summer and fall, the primary seasons of wildfire activity. Sen's slope and the Mann-Kendall test will be used to characterize spatial trends from 2006 to 2023. Pixel-level Pearson correlation analysis will then examine the associations between drought conditions and smoke-related PM₂.₅, identifying their spatial patterns across California.
 
 # 2. Materials and methods
 
 ## 2.1 Materials
 
 - Daily 10km wildfire smoke PM2.5 data, 2006-2023\
-  This machine-learning product has an overall R² of 0.63, with performance varying regionally. A zero prediction indicates a smoke day without elevated PM₂.₅. Data are available from the [Environmental change and Human Outcomes lab.](https://www.stanfordecholab.com/wildfire_smoke.)
+  This machine-learning product has an overall R² of 0.63, with performance varying regionally (Childs et al., 2022). A zero prediction indicates a smoke day without elevated PM₂.₅. Data are available from the [Environmental change and Human Outcomes lab.](https://www.stanfordecholab.com/wildfire_smoke.)
 
 - Drought data
 
-  Monthly Standardized Precipitation Evapotranspiration Index (SPEI) data at 4 km resolution combine precipitation and potential evapotranspiration to characterize drought. More negative values indicate greater drought severity, while positive values indicate wetter conditions (Table 1). The SPEI data can be access through [National Integrated Drought Information Syatem](https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly).
+  Monthly Standardized Precipitation Evapotranspiration Index (SPEI) data at 4 km resolution combine precipitation and potential evapotranspiration to characterize drought (Vicente-Serrano et al., 2010). More negative values indicate greater drought severity, while positive values indicate wetter conditions (Table 1). The SPEI data can be access through [National Integrated Drought Information](https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly)
 
   **Table 1. The drought level by SPEI category**
 
@@ -56,7 +56,7 @@ Drought ranges follow the rounded legend labels on [Drought.gov](https://www.dro
 
 ### 2.2.1 Data Clean
 
-```{r setup, echo=F}
+```{r setup}
 
 library(tidyverse)
 library(leaflet)
@@ -95,7 +95,7 @@ print(head(dailysmoke))
 
 Calculate seasonal mean daily smoke PM2.5, retain only summer and fall observations, and return a dataframe containing the Year, Season, and Grid_ID combinations.
 
-```{r data, echo=F}
+```{r}
 
 grid_ids <- unique(dailysmoke$grid_id_10km)
 smoke_season <- dailysmoke |>
@@ -122,9 +122,6 @@ Load the GeoID shapefile, clip it to California's boundary, and join it with the
 ```{r}
 #| label: fig-grid
 #| fig-cap: "Spatial distribution of the 10 km grid cells across California."
-#| echo: false
-#| message: false
-#| warning: false
 
 library(sf)
 
@@ -158,16 +155,16 @@ smokeCA <- left_join(grid_CA,smoke_season,by=c("ID" = "grid_id_10km"))
 
 Convert the seasonal mean smoke data into raster format.
 
-```{r conv,echo=F}
+```{r}
 library(sf)
 library(terra)
 
 # 1. Inspect the sf object
-cat("## 1. Inspect the spatial data\n\n")
-cat("- Geometry type:", paste(unique(st_geometry_type(smokeCA)), collapse = ", "), "\n")
-cat("- CRS:", st_crs(smokeCA)$input, "\n")
-cat("- Number of features:", nrow(smokeCA), "\n")
-cat("- Number of attributes:", ncol(st_drop_geometry(smokeCA)), "\n\n")
+# cat("## 1. Inspect the spatial data\n\n")
+# cat("- Geometry type:", paste(unique(st_geometry_type(smokeCA)), collapse = ", "), "\n")
+# cat("- CRS:", st_crs(smokeCA)$input, "\n")
+# cat("- Number of features:", nrow(smokeCA), "\n")
+# cat("- Number of attributes:", ncol(st_drop_geometry(smokeCA)), "\n\n")
 
 # Check attribute columns
 # print(names(smokeCA))
@@ -224,13 +221,13 @@ for (ss in seasons) {
 
 ```
 
-### 2.2.2 Trend analysis
+### 2.2.2 Trend Analysis
 
 ```         
 Apply Sen's slope and the Mann-Kendall test to estimate long-term trends and assess their statistical significance by season and pixel. (Packages: trend, Kendall)
 ```
 
-### 2.2.3 Pixel-level correlation
+### 2.2.3 Pixel-level Correlation
 
 ```         
 Calculate Pearson correlation coefficients between seasonal drought indices and smoke PM2.5 time series for each pixel. (Package: stats)
@@ -282,7 +279,7 @@ p_mean <- ggplot() +
     legend.title = element_text(size = 11),
     legend.position = "right")
 
-# print(p_mean)
+print(p_mean)
 # ggsave("data/PM25_CA_mean_summer_fall.png", p_mean, width = 10, height = 7, dpi = 300, bg = "white")
 ```
 
@@ -393,9 +390,7 @@ As shown in @fig-seasonal-trend, smoke PM₂.₅ concentrations generally increa
 ```{r}
 #| label: fig-seasonal-trend
 #| fig-cap: 'California-wide spatial mean of seasonal daily wildfire smoke $\mathrm{PM}_{2.5}$ concentrations for summer and fall, 2006-2023.'
-#| echo: false
-#| message: false
-#| warning: false
+
 
 # Plot the summer and fall trend
 library(terra)
@@ -470,12 +465,12 @@ p <- patchwork::wrap_plots(
   byrow = TRUE,
   guides = "collect") &
   theme(legend.position = "bottom", legend.box = "vertical")
-# print(p)
+print(p)
 # ggsave("data/PM25_CA_trend_2x2.png", p, width = 10, height = 10, dpi = 300, bg = "white")
 
 ```
 
-## 3.4 The Association between Drought  and Smoke PM2.5
+## 3.4 The Association between Drought and Smoke PM2.5
 
 ```{r}
 library(terra)
@@ -558,9 +553,7 @@ Both seasons showed substantial interannual variability for drought index (@fig-
 ```{r}
 #| label: fig-yeartrendofdroughtindex
 #| fig-cap: 'Mean drought index from 2006 to 2023 for summer and fall in California'
-#| echo: false
-#| message: false
-#| warning: false
+
 
 library(terra)
 library(dplyr)
@@ -602,8 +595,7 @@ p_annual <- ggplot(
   theme(
     plot.title = element_text(face = "bold"),
     legend.position = "top",
-    panel.grid.minor = element_blank()
-  )
+    panel.grid.minor = element_blank())
 
 print(p_annual)
 
@@ -645,8 +637,6 @@ pixel_pearson <- function(pm25, drought) {
 
 cor_summer <- pixel_pearson(summer, drought_summer_10km)
 cor_fall <- pixel_pearson(fall, drought_fall_10km)
-
-
 
 ```
 
@@ -696,10 +686,8 @@ p <- ggplot() +
     barwidth = grid::unit(0.6, "cm")
   ))
   
-# 
-# print(p)
+print(p)
 ggsave("data/PM25_SPEI_correlation.png", p, width = 10, height = 6, dpi = 300, bg = "white")
-
 ```
 
 # 4. Conclusions
@@ -711,3 +699,11 @@ Summer and fall smoke PM₂.₅ concentrations showed substantial year-to-year v
 Drought conditions generally became more severe, particularly in 2020 and 2021. Smoke PM₂.₅ concentrations and SPEI were negatively correlated across most of California in both seasons, indicating that drier years generally had higher smoke concentrations. Correlations were stronger and more widespread in fall, while summer showed greater spatial variation, with weaker correlations along parts of the coast and in Southern California.
 
 # 5. References
+
+Balch, J. K., Bradley, B. A., Abatzoglou, J. T., Nagy, R. C., Fusco, E. J., & Mahood, A. L. (2017). Human-started wildfires expand the fire niche across the United States. *Proceedings of the National Academy of Sciences*, *114*(11), 2946–2951. https://doi.org/10.1073/pnas.1617394114
+
+Childs, M. L., Li, J., Wen, J., Heft-Neal, S., Driscoll, A., Wang, S., Gould, C. F., Qiu, M., Burney, J., & Burke, M. (2022). Daily Local-Level Estimates of Ambient Wildfire Smoke PM2.5 for the Contiguous US. *Environmental Science & Technology*, *56*(19), 13607–13621. <https://doi.org/10.1021/acs.est.2c02934>
+
+Wang, Y., Wang, J., Wang, Y., & Li, W. (2022). Drought Impacts on PM2.5 Composition and Amount Over the US During 1988–2018. *Journal of Geophysical Research: Atmospheres*, *127*(24), e2022JD037677. https://doi.org/10.1029/2022JD037677
+
+Vicente-Serrano, S. M., Beguería, S., & López-Moreno, J. I. (2010). A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index. *Journal of Climate*, *23*(7), 1696–1718. <https://doi.org/10.1175/2009JCLI2909.1>
