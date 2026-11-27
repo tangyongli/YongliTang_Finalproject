@@ -2,8 +2,5 @@
 title: "About"
 ---
 
-About this site
+This site is for the finial project in Geo511
 
-```{r}
-1 + 1
-```
