@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Yongli Tang">
-<meta name="dcterms.date" content="2026-11-26">
+<meta name="dcterms.date" content="2026-11-27">
 
 <title>The trend of SMOKE-PM2.5 and its association with drought – GEO511_FinalProject</title>
 <style>
@@ -112,6 +112,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -162,8 +191,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">2.2 Methods</a>
   <ul class="collapse">
   <li><a href="#data-clean" id="toc-data-clean" class="nav-link" data-scroll-target="#data-clean">2.2.1 Data Clean</a></li>
-  <li><a href="#trend-analysis" id="toc-trend-analysis" class="nav-link" data-scroll-target="#trend-analysis">2.2.2 Trend analysis</a></li>
-  <li><a href="#pixel-level-correlation" id="toc-pixel-level-correlation" class="nav-link" data-scroll-target="#pixel-level-correlation">2.2.3 Pixel-level correlation</a></li>
+  <li><a href="#trend-analysis" id="toc-trend-analysis" class="nav-link" data-scroll-target="#trend-analysis">2.2.2 Trend Analysis</a></li>
+  <li><a href="#pixel-level-correlation" id="toc-pixel-level-correlation" class="nav-link" data-scroll-target="#pixel-level-correlation">2.2.3 Pixel-level Correlation</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">3. Results</a>
@@ -205,7 +234,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 26, 2026</p>
+      <p class="date">November 27, 2026</p>
     </div>
   </div>
   
@@ -220,8 +249,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="introduction" class="level1">
 <h1>1. Introduction</h1>
 <p>Fine particulate matter (PM2.5) from wildfire smoke is an important contributor to air pollution in the United States, particularly in the West, with important implications for public health and air quality management. Human-caused ignitions have extended the U.S. wildfire season beyond the period traditionally associated with lightning-caused fires (Balch et al., 2017). As wildfire activity and smoke emissions may change over time, understanding long-term trends in smoke-related PM₂.₅ is important for identifying changes in population exposure and informing air quality management.</p>
-<p>Drought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. (Wang et al., 2022) found that increasing summer PM₂.₅ concentrations in the northwestern United States were primarily driven by increases in total carbonaceous aerosols, with stronger trends under drought conditions. This suggests that drought may play an important role in shaping long-term changes in smoke-related PM₂.₅.</p>
-<p>This study will examine long-term trends in wildfire smoke PM₂.₅ across California during summer and fall, the primary seasons of wildfire activity. Sen’s slope and the Mann–Kendall test will be used to characterize spatial trends from 2006 to 2023. Pixel-level Pearson correlation analysis will then examine the associations between drought conditions and smoke-related PM₂.₅, identifying their spatial patterns across California.</p>
+<p>Drought is a potential influence on the seasonal patterns of wildfire smoke. By reducing vegetation and fuel moisture, drought can create conditions favorable for wildfire activity and associated smoke emissions. Wang et al.&nbsp;(2022) found that increasing summer PM₂.₅ concentrations in the northwestern United States were primarily driven by increases in total carbonaceous aerosols, with stronger trends under drought conditions. This suggests that drought may play an important role in shaping long-term changes in smoke-related PM₂.₅.</p>
+<p>This study will examine long-term trends in wildfire smoke PM₂.₅ across California during summer and fall, the primary seasons of wildfire activity. Sen’s slope and the Mann-Kendall test will be used to characterize spatial trends from 2006 to 2023. Pixel-level Pearson correlation analysis will then examine the associations between drought conditions and smoke-related PM₂.₅, identifying their spatial patterns across California.</p>
 </section>
 <section id="materials-and-methods" class="level1">
 <h1>2. Materials and methods</h1>
@@ -229,9 +258,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="materials">2.1 Materials</h2>
 <ul>
 <li><p>Daily 10km wildfire smoke PM2.5 data, 2006-2023<br>
-This machine-learning product has an overall R² of 0.63, with performance varying regionally. A zero prediction indicates a smoke day without elevated PM₂.₅. Data are available from the <a href="https://www.stanfordecholab.com/wildfire_smoke.">Environmental change and Human Outcomes lab.</a></p></li>
+This machine-learning product has an overall R² of 0.63, with performance varying regionally (Childs et al., 2022). A zero prediction indicates a smoke day without elevated PM₂.₅. Data are available from the <a href="https://www.stanfordecholab.com/wildfire_smoke.">Environmental change and Human Outcomes lab.</a></p></li>
 <li><p>Drought data</p>
-<p>Monthly Standardized Precipitation Evapotranspiration Index (SPEI) data at 4 km resolution combine precipitation and potential evapotranspiration to characterize drought. More negative values indicate greater drought severity, while positive values indicate wetter conditions (Table 1). The SPEI data can be access through <a href="https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly">National Integrated Drought Information Syatem</a>.</p>
+<p>Monthly Standardized Precipitation Evapotranspiration Index (SPEI) data at 4 km resolution combine precipitation and potential evapotranspiration to characterize drought (Vicente-Serrano et al., 2010). More negative values indicate greater drought severity, while positive values indicate wetter conditions (Table 1). The SPEI data can be access through <a href="https://www.drought.gov/data-maps-tools/us-gridded-standardized-precipitation-index-spei-nclimgrid-monthly">National Integrated Drought Information</a></p>
 <p><strong>Table 1. The drought level by SPEI category</strong></p></li>
 </ul>
 <table class="caption-top table">
@@ -278,25 +307,42 @@ This machine-learning product has an overall R² of 0.63, with performance varyi
 <h2 class="anchored" data-anchor-id="methods">2.2 Methods</h2>
 <section id="data-clean" class="level3">
 <h3 class="anchored" data-anchor-id="data-clean">2.2.1 Data Clean</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(widgetframe)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">widgetframe_widgets_dir =</span> <span class="st">'widgets'</span> ) </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial objects contain session-specific pointers; rerun these chunks.</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">cache =</span> <span class="cn">FALSE</span>, <span class="at">message =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 <p>Read daily smoke file and check attributes. The dataset <code>daily_smoke</code> covers the entire United States from 2006 to 2023. The column <code>grid_id_10km</code> contains a unique identifier for each 10-km grid cell and will be used to join the data with the GeoID shapefile.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dailysmoke <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="st">"data/smokePM2pt5_predictions_daily_10km_20060101-20231231.rds"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check object class</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># class(dailysmoke) #  "data.frame"</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check object structure</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># str(dailysmoke) # 3 variables,`grid_id_10km`,`date`,`smokePM_pred`</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># # Number of unique grid IDs</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># length(unique(dailysmoke$grid_id_10km))</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check dimensions</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># dim(dailysmoke)</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check column names (if it is a data frame)</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># names(dailysmoke)</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview the first few records</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(dailysmoke))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dailysmoke <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="st">"data/smokePM2pt5_predictions_daily_10km_20060101-20231231.rds"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check object class</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># class(dailysmoke) #  "data.frame"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check object structure</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># str(dailysmoke) # 3 variables,`grid_id_10km`,`date`,`smokePM_pred`</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># # Number of unique grid IDs</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># length(unique(dailysmoke$grid_id_10km))</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check dimensions</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># dim(dailysmoke)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># # Check column names (if it is a data frame)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># names(dailysmoke)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview the first few records</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(dailysmoke))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  grid_id_10km       date smokePM_pred
@@ -309,11 +355,29 @@ This machine-learning product has an overall R² of 0.63, with performance varyi
 </div>
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sapply(dailysmoke, class)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sapply(dailysmoke, class)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Calculate seasonal mean daily smoke PM2.5, retain only summer and fall observations, and return a dataframe containing the Year, Season, and Grid_ID combinations.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>grid_ids <span class="ot">&lt;-</span> <span class="fu">unique</span>(dailysmoke<span class="sc">$</span>grid_id_10km)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>smoke_season <span class="ot">&lt;-</span> dailysmoke <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(date), <span class="at">Year =</span> <span class="fu">year</span>(date), <span class="at">month =</span> <span class="fu">month</span>(date)) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">%in%</span> <span class="dv">6</span><span class="sc">:</span><span class="dv">11</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Season =</span> <span class="fu">if_else</span>(month <span class="sc">&lt;=</span> <span class="dv">8</span>, <span class="st">"summer"</span>, <span class="st">"fall"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(grid_id_10km, Year, Season) <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sum recorded predictions; omitted zero-smoke days add nothing to the sum.</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">aggsmokePM_pred =</span> <span class="fu">sum</span>(smokePM_pred, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Divide by all calendar days: summer = 92, fall = 91.</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dailysmokePM_pred =</span> aggsmokePM_pred<span class="sc">/</span><span class="fu">if_else</span>(Season <span class="sc">==</span> <span class="st">"summer"</span>, <span class="dv">92</span>, <span class="dv">91</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fill entirely absent grid-year-season combinations with zero.</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(<span class="at">grid_id_10km =</span> grid_ids, <span class="at">Year =</span> <span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span>, <span class="at">Season =</span> <span class="fu">c</span>(<span class="st">"summer"</span>, <span class="st">"fall"</span>), </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> <span class="fu">list</span>(<span class="at">dailysmokePM_pred =</span> <span class="dv">0</span>))</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(smoke_season,<span class="dv">5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 5
   grid_id_10km  Year Season aggsmokePM_pred dailysmokePM_pred
@@ -324,15 +388,51 @@ This machine-learning product has an overall R² of 0.63, with performance varyi
 4         1397  2007 summer            16.4             0.179
 5         1397  2008 fall              NA               0    </code></pre>
 </div>
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(smoke_season, <span class="st">"data/smoke_seasonsummerandfall.rds"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(dailysmoke)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <p>Load the GeoID shapefile, clip it to California’s boundary, and join it with the seasonal mean smoke data to create an sf object named <code>smokeCA</code>. As shown in <a href="#fig-grid" class="quarto-xref">Figure&nbsp;1</a></p>
 <div class="cell">
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the 10 km grid shapefile</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>grid_10km <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(<span class="st">"data/10km_grid_wgs84/10km_grid_wgs84.shp"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># dim(grid_10km)</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># head(grid_10km,5)</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Get the data type of every column</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># print(sapply(grid_10km, class))</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the geoshapefile of California</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>CA <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(<span class="st">"data/tl_2025_us_state/tl_2025_us_state.shp"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(STATEFP <span class="sc">==</span> <span class="st">"06"</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># head(CA,5)</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Match the CRS and combine California's polygons into one boundary.</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>CA_boundary <span class="ot">&lt;-</span> <span class="fu">st_union</span>(<span class="fu">st_transform</span>(CA, <span class="fu">st_crs</span>(grid_10km)))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_write</span>(CA_boundary,<span class="st">"data/10km_grid_wgs84CA.gpkg"</span>,<span class="at">delete_dsn =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Deleting source `data/10km_grid_wgs84CA.gpkg' failed
 Writing layer `10km_grid_wgs84CA' to data source 
   `data/10km_grid_wgs84CA.gpkg' using driver `GPKG'
 Writing 1 features with 0 fields and geometry type Multi Polygon.</code></pre>
 </div>
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clip the joined grid to California, retaining its data columns.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>grid_CA <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(grid_10km, CA_boundary)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(grid_CA))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatially Join the 10km grid shapefile with corresponding PM2.5 data by ID</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>smokeCA <span class="ot">&lt;-</span> <span class="fu">left_join</span>(grid_CA,smoke_season,<span class="at">by=</span><span class="fu">c</span>(<span class="st">"ID"</span> <span class="ot">=</span> <span class="st">"grid_id_10km"</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># sf::st_write(</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   smokeCA,</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   "data/10km_grid_wgs84CA.gpkg",</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   delete_dsn = TRUE)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-grid" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -348,29 +448,79 @@ Figure&nbsp;1: Spatial distribution of the 10 km grid cells across California.
 </div>
 <p>Convert the seasonal mean smoke data into raster format.</p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>## 1. Inspect the spatial data</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>- Geometry type: POLYGON, MULTIPOLYGON </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>- CRS: WGS 84 </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>- Number of features: 257832 </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>- Number of attributes: 7 </code></pre>
-</div>
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Inspect the sf object</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># cat("## 1. Inspect the spatial data\n\n")</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># cat("- Geometry type:", paste(unique(st_geometry_type(smokeCA)), collapse = ", "), "\n")</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cat("- CRS:", st_crs(smokeCA)$input, "\n")</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># cat("- Number of features:", nrow(smokeCA), "\n")</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># cat("- Number of attributes:", ncol(st_drop_geometry(smokeCA)), "\n\n")</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Check attribute columns</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># print(names(smokeCA))</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform the 10-km grid to EPSG:5070</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>smokeCA_proj <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(smokeCA, <span class="dv">5070</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert sf to SpatVector</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>smokeCA_vect <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">vect</span>(smokeCA_proj)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Align the extent to a fixed 10-km grid so cells are exactly square.</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>cell_size <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>grid_extent <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(terra<span class="sc">::</span><span class="fu">ext</span>(smokeCA_vect))</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>x_min <span class="ot">&lt;-</span> <span class="fu">floor</span>(grid_extent[<span class="dv">1</span>] <span class="sc">/</span> cell_size) <span class="sc">*</span> cell_size</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>x_max <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(grid_extent[<span class="dv">2</span>] <span class="sc">/</span> cell_size) <span class="sc">*</span> cell_size</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>y_min <span class="ot">&lt;-</span> <span class="fu">floor</span>(grid_extent[<span class="dv">3</span>] <span class="sc">/</span> cell_size) <span class="sc">*</span> cell_size</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>y_max <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(grid_extent[<span class="dv">4</span>] <span class="sc">/</span> cell_size) <span class="sc">*</span> cell_size</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrows =</span> <span class="fu">as.integer</span>(<span class="fu">round</span>((y_max <span class="sc">-</span> y_min) <span class="sc">/</span> cell_size)),</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncols =</span> <span class="fu">as.integer</span>(<span class="fu">round</span>((x_max <span class="sc">-</span> x_min) <span class="sc">/</span> cell_size)),</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">xmin =</span> x_min, <span class="at">xmax =</span> x_max,</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">ymin =</span> y_min, <span class="at">ymax =</span> y_max,</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">crs =</span> terra<span class="sc">::</span><span class="fu">crs</span>(smokeCA_vect))</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">abs</span>(terra<span class="sc">::</span><span class="fu">res</span>(r) <span class="sc">-</span> cell_size) <span class="sc">&lt;</span> <span class="fl">1e-8</span>))</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Get unique seasons and years</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Use consecutive years from the earliest to the latest observed year.</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">seq.int</span>(<span class="fu">min</span>(smokeCA_proj<span class="sc">$</span>Year, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="fu">max</span>(smokeCA_proj<span class="sc">$</span>Year, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>seasons <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(<span class="fu">as.character</span>(smokeCA_proj<span class="sc">$</span>Season))))</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"data"</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ss <span class="cf">in</span> seasons) {</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Initialize one NA band per year so missing combinations retain their positions.</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>  pm25_season <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(r, <span class="at">nlyrs =</span> <span class="fu">length</span>(years), <span class="at">vals =</span> <span class="cn">NA_real_</span>)</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(years)) {</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>    sub_grid <span class="ot">&lt;-</span> smokeCA_proj <span class="sc">|&gt;</span> <span class="fu">filter</span>(Year <span class="sc">==</span> years[i], Season <span class="sc">==</span> ss)</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(sub_grid) <span class="sc">==</span> <span class="dv">0</span>) <span class="cf">next</span></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Write the existing seasonal means into the corresponding annual band.</span></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>    pm25_season[[i]] <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rasterize</span>(terra<span class="sc">::</span><span class="fu">vect</span>(sub_grid), r, <span class="at">field =</span> <span class="st">"dailysmokePM_pred"</span>)}</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(pm25_season) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"dailysmokePM_pred"</span>, years)</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>  output_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>    <span class="st">"data"</span>,</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"PM25_CA_"</span>, ss, <span class="st">".tif"</span>))</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Write raster</span></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">writeRaster</span>(</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>    pm25_season,</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    output_file,</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">overwrite =</span> <span class="cn">TRUE</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 </section>
 <section id="trend-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="trend-analysis">2.2.2 Trend analysis</h3>
+<h3 class="anchored" data-anchor-id="trend-analysis">2.2.2 Trend Analysis</h3>
 <pre><code>Apply Sen's slope and the Mann-Kendall test to estimate long-term trends and assess their statistical significance by season and pixel. (Packages: trend, Kendall)</code></pre>
 </section>
 <section id="pixel-level-correlation" class="level3">
-<h3 class="anchored" data-anchor-id="pixel-level-correlation">2.2.3 Pixel-level correlation</h3>
+<h3 class="anchored" data-anchor-id="pixel-level-correlation">2.2.3 Pixel-level Correlation</h3>
 <pre><code>Calculate Pearson correlation coefficients between seasonal drought indices and smoke PM2.5 time series for each pixel. (Package: stats)</code></pre>
 </section>
 </section>
@@ -379,11 +529,25 @@ Figure&nbsp;1: Spatial distribution of the 10 km grid cells across California.
 <h1>3. Results</h1>
 <section id="annual-spatial-mean-of-smoke-pm2.5" class="level2">
 <h2 class="anchored" data-anchor-id="annual-spatial-mean-of-smoke-pm2.5">3.1 Annual Spatial Mean of Smoke PM2.5</h2>
-<p>Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns (<strong>?@fig-annual-seasonal-spatial-means</strong>). In summer, higher concentrations were more widespread across northern California. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.</p>
+<p>Mean daily wildfire smoke PM₂.₅ concentrations showed distinct seasonal spatial patterns (<a href="#fig-annual-seasonal-spatial-means" class="quarto-xref">Figure&nbsp;2</a>). In summer, higher concentrations were more widespread across northern California. In fall, elevated concentrations were more localized, with prominent hotspots in northern and central-eastern California. Coastal areas and much of southern California generally had lower concentrations in both seasons.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-annual-seasonal-spatial-means" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-annual-seasonal-spatial-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-annual-seasonal-spatial-means-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-annual-seasonal-spatial-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: California-wide spatial mean of seasonal daily wildfire smoke <span class="math inline">\(\mathrm{PM}_{2.5}\)</span> concentrations for summer and fall, 2006–2023.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="overall-annual-temporary-trends-in-smoke-pm2.5" class="level2">
 <h2 class="anchored" data-anchor-id="overall-annual-temporary-trends-in-smoke-pm2.5">3.2 Overall Annual Temporary Trends in Smoke PM2.5</h2>
-<p>As shown in <a href="#fig-annual-seasonal-means" class="quarto-xref">Figure&nbsp;2</a>, California-wide seasonal mean daily wildfire smoke PM₂.₅ concentrations were generally low before 2016, except for a summer peak in 2008 that coincided with widespread lightning-triggered fires.</p>
+<p>As shown in <a href="#fig-annual-seasonal-means" class="quarto-xref">Figure&nbsp;3</a>, California-wide seasonal mean daily wildfire smoke PM₂.₅ concentrations were generally low before 2016, except for a summer peak in 2008 that coincided with widespread lightning-triggered fires.</p>
 <p>Variability increased during 2017-2021, with the highest fall concentration in 2020 (15.70 µg/m³) and the highest summer concentration in 2021 (10.64 µg/m³). These peaks coincided with major wildfire activity, including the August Complex and Creek fires in 2020 and the Dixie and Caldor fires in 2021. Drought, extreme heat, and reduced snowpack likely helped create conditions favorable for severe wildfire activity in 2021. The Concentrations declined sharply in 2022-2023, highlighting the influence of episodic high-smoke years.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -393,7 +557,7 @@ Figure&nbsp;1: Spatial distribution of the 10 km grid cells across California.
 <img src="index_files/figure-html/fig-annual-seasonal-means-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-annual-seasonal-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: spatial mean of seasonal daily smoke pm2.5 concentrations for summer and fall
+Figure&nbsp;3: spatial mean of seasonal daily smoke pm2.5 concentrations for summer and fall
 </figcaption>
 </figure>
 </div>
@@ -405,146 +569,284 @@ Figure&nbsp;2: spatial mean of seasonal daily smoke pm2.5 concentrations for sum
 <div class="cell">
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(trend)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Kendall)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>calc_sen <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[<span class="fu">is.finite</span>(x)]</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(x) <span class="sc">&lt;</span> <span class="dv">10</span>) <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(x)) <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="dv">0</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unname</span>(trend<span class="sc">::</span><span class="fu">sens.slope</span>(x)<span class="sc">$</span>estimates)}</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>calc_mk <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[<span class="fu">is.finite</span>(x)]</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(x) <span class="sc">&lt;</span> <span class="dv">10</span>) <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(x)) <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unname</span>(Kendall<span class="sc">::</span><span class="fu">MannKendall</span>(x)<span class="sc">$</span>sl)}</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Sen's slope</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>summer_sen <span class="ot">&lt;-</span> <span class="fu">app</span>(summer, <span class="at">fun =</span> calc_sen)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>fall_sen   <span class="ot">&lt;-</span> <span class="fu">app</span>(fall, <span class="at">fun =</span> calc_sen)</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Mann-Kendall p-values</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>summer_mk <span class="ot">&lt;-</span> <span class="fu">app</span>(summer, <span class="at">fun =</span> calc_mk)</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>fall_mk   <span class="ot">&lt;-</span> <span class="fu">app</span>(fall, <span class="at">fun =</span> calc_mk)</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine slope and p-value into two bands.</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>summer_result <span class="ot">&lt;-</span> <span class="fu">c</span>(summer_sen, summer_mk)</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>fall_result <span class="ot">&lt;-</span> <span class="fu">c</span>(fall_sen, fall_mk)</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(summer_result) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sen_slope"</span>, <span class="st">"MK_pvalue"</span>)</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(fall_result) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sen_slope"</span>, <span class="st">"MK_pvalue"</span>)</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Save one two-band GeoTIFF per season.</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="co"># writeRaster(summer_result, "data/PM25_CA_summer_trend.tif", overwrite = TRUE)</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="co"># writeRaster(fall_result, "data/PM25_CA_fall_trend.tif", overwrite = TRUE)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(trend)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Kendall)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>calc_sen <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[<span class="fu">is.finite</span>(x)]</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(x) <span class="sc">&lt;</span> <span class="dv">10</span>) <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(x)) <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="dv">0</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unname</span>(trend<span class="sc">::</span><span class="fu">sens.slope</span>(x)<span class="sc">$</span>estimates)}</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>calc_mk <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[<span class="fu">is.finite</span>(x)]</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(x) <span class="sc">&lt;</span> <span class="dv">10</span>) <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(x)) <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unname</span>(Kendall<span class="sc">::</span><span class="fu">MannKendall</span>(x)<span class="sc">$</span>sl)}</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Sen's slope</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>summer_sen <span class="ot">&lt;-</span> <span class="fu">app</span>(summer, <span class="at">fun =</span> calc_sen)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>fall_sen   <span class="ot">&lt;-</span> <span class="fu">app</span>(fall, <span class="at">fun =</span> calc_sen)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Mann-Kendall p-values</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>summer_mk <span class="ot">&lt;-</span> <span class="fu">app</span>(summer, <span class="at">fun =</span> calc_mk)</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>fall_mk   <span class="ot">&lt;-</span> <span class="fu">app</span>(fall, <span class="at">fun =</span> calc_mk)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine slope and p-value into two bands.</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>summer_result <span class="ot">&lt;-</span> <span class="fu">c</span>(summer_sen, summer_mk)</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>fall_result <span class="ot">&lt;-</span> <span class="fu">c</span>(fall_sen, fall_mk)</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(summer_result) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sen_slope"</span>, <span class="st">"MK_pvalue"</span>)</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(fall_result) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sen_slope"</span>, <span class="st">"MK_pvalue"</span>)</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Save one two-band GeoTIFF per season.</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="co"># writeRaster(summer_result, "data/PM25_CA_summer_trend.tif", overwrite = TRUE)</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="co"># writeRaster(fall_result, "data/PM25_CA_fall_trend.tif", overwrite = TRUE)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>As shown in <strong>?@fig-seasonal-trend</strong>, smoke PM₂.₅ concentrations generally increased across most of California. The largest summer increases occurred in northwestern California, while fall increases were most pronounced in northern and east-central California. Statistically significant increases were observed in both seasons.</p>
+<p>As shown in <a href="#fig-seasonal-trend" class="quarto-xref">Figure&nbsp;4</a>, smoke PM₂.₅ concentrations generally increased across most of California. The largest summer increases occurred in northwestern California, while fall increases were most pronounced in northern and east-central California. Statistically significant increases were observed in both seasons.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the summer and fall trend</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate a shared, symmetric color scale for both trend maps.</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>slope_range <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">global</span>(</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(summer_result[[<span class="dv">1</span>]], fall_result[[<span class="dv">1</span>]]),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"range"</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>slope_limit <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(<span class="fu">as.matrix</span>(slope_range)), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.finite</span>(slope_limit) <span class="sc">||</span> slope_limit <span class="sc">==</span> <span class="dv">0</span>) slope_limit <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Common map theme.</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>map_theme <span class="ot">&lt;-</span> <span class="fu">theme_void</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">6</span>, <span class="dv">10</span>),</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>))</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot Sen's slope.</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>plot_slope <span class="ot">&lt;-</span> <span class="cf">function</span>(x, title) {</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_spatraster</span>(<span class="at">data =</span> x) <span class="sc">+</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_gradient2</span>(</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">low =</span> <span class="st">"#2166AC"</span>, <span class="at">mid =</span> <span class="st">"#F7F7F7"</span>, <span class="at">high =</span> <span class="st">"#B2182B"</span>,</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">midpoint =</span> <span class="dv">0</span>,</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span>slope_limit, slope_limit),</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">name =</span> <span class="fu">expression</span>(<span class="fu">atop</span>(<span class="st">"Sen's slope"</span>, <span class="st">"("</span> <span class="sc">*</span> mu <span class="sc">*</span> <span class="st">"g/"</span> <span class="sc">*</span> m<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> <span class="st">")/year"</span>)),</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.value =</span> <span class="st">"transparent"</span>) <span class="sc">+</span></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> title) <span class="sc">+</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    map_theme}</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot Mann-Kendall significance.</span></span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>plot_significance <span class="ot">&lt;-</span> <span class="cf">function</span>(x, title) {</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>  sig <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">ifel</span>(x <span class="sc">&lt;</span> <span class="fl">0.05</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>  sig <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(sig)</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">levels</span>(sig) <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">ID =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">Significance =</span> <span class="fu">c</span>(<span class="st">"Not significant"</span>, <span class="st">"Significant"</span>))</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_spatraster</span>(<span class="at">data =</span> sig, <span class="at">show.legend =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>      <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Not significant"</span> <span class="ot">=</span> <span class="st">"grey80"</span>,</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Significant"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span></span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>      <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">"Not significant"</span>, <span class="st">"Significant"</span>),</span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>      <span class="at">drop =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.translate =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">"MK significance"</span>,</span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.value =</span> <span class="st">"transparent"</span></span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> title) <span class="sc">+</span></span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>    map_theme}</span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange the four maps.</span></span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_slope</span>(summer_result[[<span class="dv">1</span>]], <span class="st">"Summer trend"</span>),</span>
+<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_significance</span>(summer_result[[<span class="dv">2</span>]], <span class="st">"Summer significance"</span>),</span>
+<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_slope</span>(fall_result[[<span class="dv">1</span>]], <span class="st">"Fall trend"</span>),</span>
+<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_significance</span>(fall_result[[<span class="dv">2</span>]], <span class="st">"Fall significance"</span>))</span>
+<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> patchwork<span class="sc">::</span><span class="fu">wrap_plots</span>(</span>
+<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>  plots,</span>
+<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">2</span>,</span>
+<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>  <span class="at">guides =</span> <span class="st">"collect"</span>) <span class="sc">&amp;</span></span>
+<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>, <span class="at">legend.box =</span> <span class="st">"vertical"</span>)</span>
+<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span>
+<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave("data/PM25_CA_trend_2x2.png", p, width = 10, height = 10, dpi = 300, bg = "white")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-seasonal-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-seasonal-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-seasonal-trend-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-seasonal-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: California-wide spatial mean of seasonal daily wildfire smoke <span class="math inline">\(\mathrm{PM}_{2.5}\)</span> concentrations for summer and fall, 2006-2023.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="the-association-between-drought-and-smoke-pm2.5" class="level2">
 <h2 class="anchored" data-anchor-id="the-association-between-drought-and-smoke-pm2.5">3.4 The Association between Drought and Smoke PM2.5</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>drought_index <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/nclimgrid-spei-pearson-01_CA.nc"</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>dates <span class="ot">&lt;-</span> <span class="fu">time</span>(drought_index)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">format</span>(dates, <span class="st">"%Y"</span>))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>months <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">format</span>(dates, <span class="st">"%m"</span>))</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Date range:"</span>, <span class="fu">range</span>(dates), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>drought_index <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/nclimgrid-spei-pearson-01_CA.nc"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>dates <span class="ot">&lt;-</span> <span class="fu">time</span>(drought_index)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">format</span>(dates, <span class="st">"%Y"</span>))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>months <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">format</span>(dates, <span class="st">"%m"</span>))</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Date range:"</span>, <span class="fu">range</span>(dates), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Date range: 13149 19692 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Month range:"</span>, <span class="fu">range</span>(months), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Month range:"</span>, <span class="fu">range</span>(months), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Month range: 1 12 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>get_seasonal_spei <span class="ot">&lt;-</span> <span class="cf">function</span>(season_months, season_name) {</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>(years <span class="sc">%in%</span> <span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span> <span class="sc">&amp;</span> months <span class="sc">%in%</span> season_months)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (y <span class="cf">in</span> <span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span>) {</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    observed <span class="ot">&lt;-</span> months[idx][years[idx] <span class="sc">==</span> y]</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">identical</span>(<span class="fu">sort</span>(observed), <span class="fu">as.integer</span>(season_months))) {</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="fu">sprintf</span>(<span class="st">"Missing or duplicate months: %s %d"</span>, season_name, y))</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">tapp</span>(drought_index[[idx]], <span class="at">index =</span> years[idx], <span class="at">fun =</span> mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"SPEI_"</span>, season_name, <span class="st">"_"</span>, <span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span>)</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Average June–August and September–November for each year.</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>drought_summer <span class="ot">&lt;-</span> <span class="fu">get_seasonal_spei</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">8</span>, <span class="st">"summer"</span>)</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>drought_fall <span class="ot">&lt;-</span> <span class="fu">get_seasonal_spei</span>(<span class="dv">9</span><span class="sc">:</span><span class="dv">11</span>, <span class="st">"fall"</span>)</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_summer)</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print('--------------------')</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_fall)</span></span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Save 18 annual bands for each season, covering 2006-2023.</span></span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_summer, <span class="st">"data/SPEI_CA_summer.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_fall, <span class="st">"data/SPEI_CA_fall.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>get_seasonal_spei <span class="ot">&lt;-</span> <span class="cf">function</span>(season_months, season_name) {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>(years <span class="sc">%in%</span> <span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span> <span class="sc">&amp;</span> months <span class="sc">%in%</span> season_months)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (y <span class="cf">in</span> <span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span>) {</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    observed <span class="ot">&lt;-</span> months[idx][years[idx] <span class="sc">==</span> y]</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">identical</span>(<span class="fu">sort</span>(observed), <span class="fu">as.integer</span>(season_months))) {</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="fu">sprintf</span>(<span class="st">"Missing or duplicate months: %s %d"</span>, season_name, y))</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">tapp</span>(drought_index[[idx]], <span class="at">index =</span> years[idx], <span class="at">fun =</span> mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"SPEI_"</span>, season_name, <span class="st">"_"</span>, <span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span>)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Average June–August and September–November for each year.</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>drought_summer <span class="ot">&lt;-</span> <span class="fu">get_seasonal_spei</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">8</span>, <span class="st">"summer"</span>)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>drought_fall <span class="ot">&lt;-</span> <span class="fu">get_seasonal_spei</span>(<span class="dv">9</span><span class="sc">:</span><span class="dv">11</span>, <span class="st">"fall"</span>)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_summer)</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print('--------------------')</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_fall)</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Save 18 annual bands for each season, covering 2006-2023.</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_summer, <span class="st">"data/SPEI_CA_summer.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_fall, <span class="st">"data/SPEI_CA_fall.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The season mean drought index above has a spatial resolution of 4km, whereas our # PM2.5 data has a spatial resolution of 10km. Now, re sample the drought index to # the resolution of pm2.5.</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read seasonal rasters.</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>summer <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/PM25_CA_summer.tif"</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>fall <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/PM25_CA_fall.tif"</span>)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>drought_summer <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/SPEI_CA_summer.tif"</span>)</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>drought_fall <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/SPEI_CA_fall.tif"</span>)</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Match the CRS, resolution, extent and alignment of each PM2.5 grid.</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>align_drought <span class="ot">&lt;-</span> <span class="cf">function</span>(drought, pm25) {</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  target <span class="ot">&lt;-</span> pm25[[<span class="dv">1</span>]]</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">crs</span>(drought) <span class="sc">==</span> <span class="st">""</span> <span class="sc">||</span> <span class="fu">crs</span>(target) <span class="sc">==</span> <span class="st">""</span>) {</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Missing CRS information."</span>)</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Same CRS:"</span>, <span class="fu">same.crs</span>(drought, target), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">same.crs</span>(drought, target)) {</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">resample</span>(drought, target, <span class="at">method =</span> <span class="st">"average"</span>)</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">project</span>(drought, target, <span class="at">method =</span> <span class="st">"average"</span>)</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result) <span class="ot">&lt;-</span> <span class="fu">names</span>(drought)</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">compareGeom</span>(result[[<span class="dv">1</span>]], target, <span class="at">res =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>drought_summer_10km <span class="ot">&lt;-</span> <span class="fu">align_drought</span>(drought_summer, summer)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The season mean drought index above has a spatial resolution of 4km, whereas our # PM2.5 data has a spatial resolution of 10km. Now, re sample the drought index to # the resolution of pm2.5.</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read seasonal rasters.</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>summer <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/PM25_CA_summer.tif"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>fall <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/PM25_CA_fall.tif"</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>drought_summer <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/SPEI_CA_summer.tif"</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>drought_fall <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"data/SPEI_CA_fall.tif"</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Match the CRS, resolution, extent and alignment of each PM2.5 grid.</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>align_drought <span class="ot">&lt;-</span> <span class="cf">function</span>(drought, pm25) {</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  target <span class="ot">&lt;-</span> pm25[[<span class="dv">1</span>]]</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">crs</span>(drought) <span class="sc">==</span> <span class="st">""</span> <span class="sc">||</span> <span class="fu">crs</span>(target) <span class="sc">==</span> <span class="st">""</span>) {</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Missing CRS information."</span>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Same CRS:"</span>, <span class="fu">same.crs</span>(drought, target), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">same.crs</span>(drought, target)) {</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">resample</span>(drought, target, <span class="at">method =</span> <span class="st">"average"</span>)</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">project</span>(drought, target, <span class="at">method =</span> <span class="st">"average"</span>)</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result) <span class="ot">&lt;-</span> <span class="fu">names</span>(drought)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">compareGeom</span>(result[[<span class="dv">1</span>]], target, <span class="at">res =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>drought_summer_10km <span class="ot">&lt;-</span> <span class="fu">align_drought</span>(drought_summer, summer)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Same CRS: FALSE </code></pre>
 </div>
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>drought_fall_10km <span class="ot">&lt;-</span> <span class="fu">align_drought</span>(drought_fall, fall)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>drought_fall_10km <span class="ot">&lt;-</span> <span class="fu">align_drought</span>(drought_fall, fall)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Same CRS: FALSE </code></pre>
 </div>
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the resulting grids.</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_summer_10km)</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_fall_10km)</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print(rbind(PM25 = res(summer), SPEI = res(drought_summer_10km)))</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the aligned seasonal rasters.</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_summer_10km, <span class="st">"data/SPEI_CA_summer_10km.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_fall_10km, <span class="st">"data/SPEI_CA_fall_10km.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the resulting grids.</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_summer_10km)</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># print(drought_fall_10km)</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print(rbind(PM25 = res(summer), SPEI = res(drought_summer_10km)))</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the aligned seasonal rasters.</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_summer_10km, <span class="st">"data/SPEI_CA_summer_10km.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(drought_fall_10km, <span class="st">"data/SPEI_CA_fall_10km.tif"</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Both seasons showed substantial interannual variability for drought index (<a href="#fig-yeartrendofdroughtindex" class="quarto-xref">Figure&nbsp;3</a>). Notably, SPEI reached its lowest values in 2020 and 2021, indicating more severe drought conditions during these two years.</p>
+<p>Both seasons showed substantial interannual variability for drought index (<a href="#fig-yeartrendofdroughtindex" class="quarto-xref">Figure&nbsp;5</a>). Notably, SPEI reached its lowest values in 2020 and 2021, indicating more severe drought conditions during these two years.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Show Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>get_annual_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(r, season) {</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  layer_years <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(<span class="fu">names</span>(r), <span class="st">"[0-9]{4}$"</span>))</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">anyNA</span>(layer_years) <span class="sc">||</span> <span class="fu">anyDuplicated</span>(layer_years)) {</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Each raster band must end with a unique four-digit year."</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">global</span>(r, <span class="at">fun =</span> <span class="st">"mean"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">Year =</span> layer_years, <span class="at">Mean_SPEI =</span> x<span class="sc">$</span>mean, <span class="at">Season =</span> season)</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>annual_spei <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_annual_mean</span>(drought_summer_10km, <span class="st">"Summer"</span>),</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_annual_mean</span>(drought_fall_10km, <span class="st">"Fall"</span>)</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Season =</span> <span class="fu">factor</span>(Season, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Summer"</span>, <span class="st">"Fall"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Season, Year)</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>p_annual <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  annual_spei,</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> Mean_SPEI, <span class="at">color =</span> Season, <span class="at">linetype =</span> Season, <span class="at">shape =</span> Season)) <span class="sc">+</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"grey50"</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>) <span class="sc">+</span></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.2</span>) <span class="sc">+</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Summer"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"Fall"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>)) <span class="sc">+</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">c</span>(</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">seq</span>(<span class="fu">min</span>(annual_spei<span class="sc">$</span>Year), <span class="fu">max</span>(annual_spei<span class="sc">$</span>Year), <span class="at">by =</span> <span class="dv">2</span>),</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(annual_spei<span class="sc">$</span>Year)</span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>  )))) <span class="sc">+</span></span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Annual Variation in Seasonal SPEI"</span>,</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"California-wide mean SPEI"</span></span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p_annual)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output-display">
 <div id="fig-yeartrendofdroughtindex" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -552,7 +854,7 @@ Figure&nbsp;2: spatial mean of seasonal daily smoke pm2.5 concentrations for sum
 <img src="index_files/figure-html/fig-yeartrendofdroughtindex-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yeartrendofdroughtindex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Mean drought index from 2006 to 2023 for summer and fall in California
+Figure&nbsp;5: Mean drought index from 2006 to 2023 for summer and fall in California
 </figcaption>
 </figure>
 </div>
@@ -561,44 +863,58 @@ Figure&nbsp;3: Mean drought index from 2006 to 2023 for summer and fall in Calif
 <div class="cell">
 <details class="code-fold">
 <summary>Show Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the pixel-level personal coefficient between season pm2.5 and drought.</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Match bands to 2006-2023 using the year at the end of each band name.</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>match_years <span class="ot">&lt;-</span> <span class="cf">function</span>(r) {</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  years <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">sub</span>(<span class="st">".*([0-9]{4})$"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">1"</span>, <span class="fu">names</span>(r)))</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">anyNA</span>(years) <span class="sc">||</span> <span class="fu">anyDuplicated</span>(years) <span class="sc">||</span> <span class="sc">!</span><span class="fu">all</span>(<span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span> <span class="sc">%in%</span> years)) {</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Check band names: each band must end with a unique year covering 2006–2023."</span>)</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(r[[<span class="fu">match</span>(<span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span>, years)]])</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the temporal Pearson correlation at each pixel.</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>pixel_pearson <span class="ot">&lt;-</span> <span class="cf">function</span>(pm25, drought) {</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  pm25 <span class="ot">&lt;-</span> <span class="fu">match_years</span>(pm25)</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  drought <span class="ot">&lt;-</span> <span class="fu">match_years</span>(drought)</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">compareGeom</span>(pm25, drought, <span class="at">lyrs =</span> <span class="cn">TRUE</span>, <span class="at">crs =</span> <span class="cn">TRUE</span>, <span class="at">res =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">nlyr</span>(pm25)</span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">app</span>(<span class="fu">c</span>(pm25, drought), <span class="at">fun =</span> <span class="cf">function</span>(v) {</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> v[<span class="fu">seq_len</span>(n)]</span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> v[n <span class="sc">+</span> <span class="fu">seq_len</span>(n)]</span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    valid <span class="ot">&lt;-</span> <span class="fu">is.finite</span>(x) <span class="sc">&amp;</span> <span class="fu">is.finite</span>(y)</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> x[valid]</span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> y[valid]</span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return NA for fewer than 3 paired years or constant values.</span></span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(x) <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">||</span> <span class="fu">sd</span>(x) <span class="sc">==</span> <span class="dv">0</span> <span class="sc">||</span> <span class="fu">sd</span>(y) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">cor</span>(x, y, <span class="at">method =</span> <span class="st">"pearson"</span>))</span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result) <span class="ot">&lt;-</span> <span class="st">"Pearson_r"</span></span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>cor_summer <span class="ot">&lt;-</span> <span class="fu">pixel_pearson</span>(summer, drought_summer_10km)</span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>cor_fall <span class="ot">&lt;-</span> <span class="fu">pixel_pearson</span>(fall, drought_fall_10km)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the pixel-level personal coefficient between season pm2.5 and drought.</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Match bands to 2006-2023 using the year at the end of each band name.</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>match_years <span class="ot">&lt;-</span> <span class="cf">function</span>(r) {</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  years <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">sub</span>(<span class="st">".*([0-9]{4})$"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">1"</span>, <span class="fu">names</span>(r)))</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">anyNA</span>(years) <span class="sc">||</span> <span class="fu">anyDuplicated</span>(years) <span class="sc">||</span> <span class="sc">!</span><span class="fu">all</span>(<span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span> <span class="sc">%in%</span> years)) {</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Check band names: each band must end with a unique year covering 2006–2023."</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(r[[<span class="fu">match</span>(<span class="dv">2006</span><span class="sc">:</span><span class="dv">2023</span>, years)]])</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the temporal Pearson correlation at each pixel.</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>pixel_pearson <span class="ot">&lt;-</span> <span class="cf">function</span>(pm25, drought) {</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  pm25 <span class="ot">&lt;-</span> <span class="fu">match_years</span>(pm25)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  drought <span class="ot">&lt;-</span> <span class="fu">match_years</span>(drought)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">compareGeom</span>(pm25, drought, <span class="at">lyrs =</span> <span class="cn">TRUE</span>, <span class="at">crs =</span> <span class="cn">TRUE</span>, <span class="at">res =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">nlyr</span>(pm25)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">app</span>(<span class="fu">c</span>(pm25, drought), <span class="at">fun =</span> <span class="cf">function</span>(v) {</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> v[<span class="fu">seq_len</span>(n)]</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> v[n <span class="sc">+</span> <span class="fu">seq_len</span>(n)]</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    valid <span class="ot">&lt;-</span> <span class="fu">is.finite</span>(x) <span class="sc">&amp;</span> <span class="fu">is.finite</span>(y)</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> x[valid]</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> y[valid]</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return NA for fewer than 3 paired years or constant values.</span></span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(x) <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">||</span> <span class="fu">sd</span>(x) <span class="sc">==</span> <span class="dv">0</span> <span class="sc">||</span> <span class="fu">sd</span>(y) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="cn">NA_real_</span>)</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">cor</span>(x, y, <span class="at">method =</span> <span class="st">"pearson"</span>))</span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(result) <span class="ot">&lt;-</span> <span class="st">"Pearson_r"</span></span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>cor_summer <span class="ot">&lt;-</span> <span class="fu">pixel_pearson</span>(summer, drought_summer_10km)</span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>cor_fall <span class="ot">&lt;-</span> <span class="fu">pixel_pearson</span>(fall, drought_fall_10km)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p><strong>?@fig-correl</strong> shows the Pearson correlation between PM2.5 and drought index for summer and fall. Smoke PM₂.₅ and SPEI were negatively correlated across most of California in both summer and fall, indicating that drier years generally had higher smoke concentrations. Correlations were stronger and more widespread in fall, while summer showed greater spatial variation, with weaker correlations along parts of the coast and in southern California.</p>
+<p><a href="#fig-correl" class="quarto-xref">Figure&nbsp;6</a> shows the Pearson correlation between PM2.5 and drought index for summer and fall. Smoke PM₂.₅ and SPEI were negatively correlated across most of California in both summer and fall, indicating that drier years generally had higher smoke concentrations. Correlations were stronger and more widespread in fall, while summer showed greater spatial variation, with weaker correlations along parts of the coast and in southern California.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-correl" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-correl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-correl-1.png" class="img-fluid figure-img" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-correl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Pixel-wise Pearson correlation between PM₂.₅ and drought index during summer and #fall, 2006-2023.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="conclusions" class="level1">
@@ -609,6 +925,10 @@ Figure&nbsp;3: Mean drought index from 2006 to 2023 for summer and fall in Calif
 </section>
 <section id="references" class="level1">
 <h1>5. References</h1>
+<p>Balch, J. K., Bradley, B. A., Abatzoglou, J. T., Nagy, R. C., Fusco, E. J., &amp; Mahood, A. L. (2017). Human-started wildfires expand the fire niche across the United States. <em>Proceedings of the National Academy of Sciences</em>, <em>114</em>(11), 2946–2951. https://doi.org/10.1073/pnas.1617394114</p>
+<p>Childs, M. L., Li, J., Wen, J., Heft-Neal, S., Driscoll, A., Wang, S., Gould, C. F., Qiu, M., Burney, J., &amp; Burke, M. (2022). Daily Local-Level Estimates of Ambient Wildfire Smoke PM2.5 for the Contiguous US. <em>Environmental Science &amp; Technology</em>, <em>56</em>(19), 13607–13621. <a href="https://doi.org/10.1021/acs.est.2c02934" class="uri">https://doi.org/10.1021/acs.est.2c02934</a></p>
+<p>Wang, Y., Wang, J., Wang, Y., &amp; Li, W. (2022). Drought Impacts on PM2.5 Composition and Amount Over the US During 1988–2018. <em>Journal of Geophysical Research: Atmospheres</em>, <em>127</em>(24), e2022JD037677. https://doi.org/10.1029/2022JD037677</p>
+<p>Vicente-Serrano, S. M., Beguería, S., &amp; López-Moreno, J. I. (2010). A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index. <em>Journal of Climate</em>, <em>23</em>(7), 1696–1718. <a href="https://doi.org/10.1175/2009JCLI2909.1" class="uri">https://doi.org/10.1175/2009JCLI2909.1</a></p>
 
 
 </section>
